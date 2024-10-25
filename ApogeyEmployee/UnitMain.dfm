@@ -11,7 +11,9 @@ object FormMain: TFormMain
   Font.Name = 'Segoe UI'
   Font.Style = []
   Position = poDesktopCenter
+  RoundedCorners = rcSmall
   WindowState = wsMaximized
+  ShowInTaskBar = True
   OnCreate = FormCreate
   TextHeight = 15
   object PageControlMain: TPageControl
@@ -22,8 +24,6 @@ object FormMain: TFormMain
     ActivePage = TabSheetRead
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 966
-    ExplicitHeight = 678
     object TabSheetRead: TTabSheet
       Caption = #1048#1085#1092#1086#1088#1084#1072#1094#1080#1103' '#1086' '#1089#1086#1090#1088#1091#1076#1085#1080#1082#1072#1093
       object PanelEmployeesList: TPanel
@@ -33,7 +33,6 @@ object FormMain: TFormMain
         Height = 656
         Align = alLeft
         TabOrder = 0
-        ExplicitHeight = 648
         object DBGridEmployeesList: TDBGrid
           Left = 1
           Top = 24
@@ -72,10 +71,6 @@ object FormMain: TFormMain
         Padding.Right = 5
         Padding.Bottom = 5
         TabOrder = 1
-        ExplicitLeft = 16
-        ExplicitTop = 324
-        ExplicitWidth = 585
-        ExplicitHeight = 332
         DesignSize = (
           603
           652)
@@ -92,7 +87,6 @@ object FormMain: TFormMain
           EditLabel.Caption = #1043#1086#1088#1086#1076
           LabelPosition = lpLeft
           LabelSpacing = 10
-          ExplicitWidth = 499
         end
         object DBLabeledEditPost: TDBLabeledEdit
           Left = 82
@@ -102,12 +96,11 @@ object FormMain: TFormMain
           Anchors = [akLeft, akTop, akRight]
           DataSource = DataModule1.DataSourceEmployee
           TabOrder = 1
-          EditLabel.Width = 62
+          EditLabel.Width = 64
           EditLabel.Height = 23
           EditLabel.Caption = #1044#1086#1083#1078#1085#1086#1089#1090#1100
           LabelPosition = lpLeft
           LabelSpacing = 10
-          ExplicitWidth = 499
         end
         object DBLabeledEditGrade: TDBLabeledEdit
           Left = 82
@@ -122,7 +115,6 @@ object FormMain: TFormMain
           EditLabel.Caption = #1043#1088#1077#1081#1076
           LabelPosition = lpLeft
           LabelSpacing = 10
-          ExplicitWidth = 499
         end
         object DBLabeledEditSection: TDBLabeledEdit
           Left = 82
@@ -132,12 +124,11 @@ object FormMain: TFormMain
           Anchors = [akLeft, akTop, akRight]
           DataSource = DataModule1.DataSourceEmployee
           TabOrder = 3
-          EditLabel.Width = 59
+          EditLabel.Width = 61
           EditLabel.Height = 23
           EditLabel.Caption = #1056#1072#1079#1076#1077#1083'(-'#1099')'
           LabelPosition = lpLeft
           LabelSpacing = 10
-          ExplicitWidth = 499
         end
         object DBLabeledEditContact: TDBLabeledEdit
           Left = 82
@@ -152,7 +143,6 @@ object FormMain: TFormMain
           EditLabel.Caption = #1050#1086#1085#1090#1072#1082#1090
           LabelPosition = lpLeft
           LabelSpacing = 10
-          ExplicitWidth = 499
         end
         object EditName: TEdit
           Left = 5
@@ -167,9 +157,6 @@ object FormMain: TFormMain
           Font.Style = []
           ParentFont = False
           TabOrder = 5
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 581
         end
       end
     end
@@ -195,7 +182,7 @@ object FormMain: TFormMain
         Width = 960
         Height = 29
         ButtonHeight = 23
-        ButtonWidth = 59
+        ButtonWidth = 61
         ShowCaptions = True
         TabOrder = 1
         object ToolButtonAdd: TToolButton
@@ -205,7 +192,7 @@ object FormMain: TFormMain
           ImageIndex = 0
         end
         object ToolButtonDelete: TToolButton
-          Left = 59
+          Left = 61
           Top = 0
           Caption = #1059#1076#1072#1083#1080#1090#1100
           ImageIndex = 1

@@ -1,62 +1,62 @@
 ﻿[TabSheetWrite]
-Coordinates=10,238,86,33
+Coordinates=10,238,100,36
 
 [ToolBarDBControl]
-Coordinates=250,192,104,33
+Coordinates=250,192,119,36
 
 [ToolButtonAdd]
-Coordinates=140,192,89,33
+Coordinates=140,192,100,36
 
 [DBGridEmployees]
-Coordinates=10,192,104,33
+Coordinates=10,192,120,36
 
 [ToolButtonDelete]
-Coordinates=245,146,100,33
+Coordinates=245,146,114,36
 
 [PageControlMain]
-Coordinates=121,146,99,33
+Coordinates=121,146,114,36
 
 [TabSheetRead]
-Coordinates=10,146,85,33
+Coordinates=10,146,101,36
 
 [DataModule1.FDTableEmployee]
-Coordinates=240,10,170,51
+Coordinates=240,10,201,58
 
 [DataModule1.DataSourceEmployee]
-Coordinates=667,1,187,33
+Coordinates=667,1,219,36
 
 [DBGridEmployeesList]
-Coordinates=151,78,123,33
+Coordinates=151,78,140,36
 Visible=True
 
 [SearchBox1]
-Coordinates=10,10,73,51
+Coordinates=10,10,84,58
 
 [PanelEmployeesList]
-Coordinates=10,78,114,51
+Coordinates=10,78,131,58
 
 []
-Coordinates=448,157,82,33
+Coordinates=486,160,91,36
 
 [ScrollBoxEmployeeInfo]
-Coordinates=448,1,129,33
+Coordinates=448,1,148,36
 
 [EditName]
-Coordinates=102,1,61,51
+Coordinates=102,1,71,58
 
 [DBLabeledEditCity]
-Coordinates=448,53,93,33
+Coordinates=448,53,123,36
 
 [DBLabeledEditPost]
-Coordinates=448,105,93,33
+Coordinates=448,105,126,36
 Visible=True
 
 [DBLabeledEditGrade]
-Coordinates=312,80,93,33
+Coordinates=312,80,136,36
 
 [DBLabeledEditSection]
-Coordinates=448,261,93,33
+Coordinates=448,261,143,36
 
 [DBLabeledEditContact]
-Coordinates=448,209,93,33
+Coordinates=448,209,145,36
 
