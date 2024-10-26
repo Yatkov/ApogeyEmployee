@@ -29,6 +29,7 @@ type
     ScrollBoxEmployeeInfo: TScrollBox;
     procedure SearchBox1Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure ToolButtonAddClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -42,23 +43,35 @@ implementation
 
 {$R *.dfm}
 
-uses DataModule;
+uses DataModule, UnitAddEmployee;
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
   DataModule1.FDConEmployee.Open;
   DataModule1.FDTableEmployee.Open;
+  DataModule1.FDTableCity.Open;
+  DataModule1.FDTablePost.Open;
+  DataModule1.FDQueryEmployee.SQL.Text := 'Select middleName || " " || firstName || " " || lastName ФИО, Cities.name Город, Posts.PostName Должность, Grades.GradeName Грейд'
+                                          +' FROM Employee e'
+                                          +' JOIN Cities ON e.city = Cities.CityID'
+                                          +' JOIN Posts ON e.post = Posts.PostID'
+                                          +' JOIN Grades ON e.grade = Grades.GradeID';
+  DataModule1.FDQueryEmployee.Open;
 
-  DBGridEmployeesList.Columns[0].Width := 100;
-  DBGridEmployeesList.Columns[1].Width := 100;
-  DBGridEmployeesList.Columns[2].Width := 100;
-  DBGridEmployeesList.Columns[3].Width := 100;
-  DBGridEmployeesList.Columns[4].Width := 100;
+  DBGridEmployeesList.Columns[0].Width := 200;
+  DBGridEmployeesList.Columns[1].Width := 150;
+  DBGridEmployeesList.Columns[2].Width := 150;
+  DBGridEmployeesList.Columns[3].Width := 150;
 end;
 
 procedure TFormMain.SearchBox1Change(Sender: TObject);
 begin
   //DataModule1.FDConEmployee.DriverName := 'SQLite';
+end;
+
+procedure TFormMain.ToolButtonAddClick(Sender: TObject);
+begin
+  FormAddEmployee.show;
 end;
 
 end.

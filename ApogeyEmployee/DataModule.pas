@@ -16,6 +16,15 @@ type
     FDConEmployee: TFDConnection;
     FDTableEmployee: TFDTable;
     DataSourceEmployee: TDataSource;
+    DataSourceCity: TDataSource;
+    FDTableCity: TFDTable;
+    FDTablePost: TFDTable;
+    DataSourcePost: TDataSource;
+    FDQueryGrade: TFDQuery;
+    DataSourceGrade: TDataSource;
+    FDQueryEmployee: TFDQuery;
+    DataSourceEmployeeSQL: TDataSource;
+    FDQuerySectionName: TFDQuery;
     procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }
@@ -47,9 +56,20 @@ begin
     FDConEmployee.Params.DriverID := 'SQLite';
     FDConEmployee.Params.Database := ExtractFilePath(Application.ExeName) + 'db/ApogeyEmployee.db';
     FDTableEmployee.ConnectionName := FDConEmployee.ConnectionName;
+    FDTableCity.ConnectionName := FDConEmployee.ConnectionName;
+    FDTablePost.ConnectionName := FDConEmployee.ConnectionName;
     FDTableEmployee.TableName := 'Employee';
-    //FDQueryForms.ConnectionName :=  FDConRosstatForm.ConnectionName;
-    //FDQueryForms.Connection := FDConRosstatForm;
+    FDTableCity.TableName := 'Cities';
+    FDTablePost.TableName := 'Posts';
+
+    FDQueryGrade.ConnectionName :=  FDConEmployee.ConnectionName;
+    FDQueryGrade.Connection := FDConEmployee;
+
+    FDQueryEmployee.ConnectionName :=  FDConEmployee.ConnectionName;
+    FDQueryEmployee.Connection := FDConEmployee;
+
+    FDQuerySectionName.ConnectionName :=  FDConEmployee.ConnectionName;
+    FDQuerySectionName.Connection := FDConEmployee;
   finally
 
   end;
