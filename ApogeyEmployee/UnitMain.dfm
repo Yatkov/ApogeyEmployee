@@ -24,7 +24,6 @@ object FormMain: TFormMain
     ActivePage = TabSheetWrite
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 968
     object TabSheetRead: TTabSheet
       Caption = #1048#1085#1092#1086#1088#1084#1072#1094#1080#1103' '#1086' '#1089#1086#1090#1088#1091#1076#1085#1080#1082#1072#1093
       object PanelEmployeesList: TPanel
@@ -59,7 +58,6 @@ object FormMain: TFormMain
           TabOrder = 1
           Text = 'SearchBox1'
           OnChange = SearchBox1Change
-          ExplicitWidth = 351
         end
       end
       object ScrollBoxEmployeeInfo: TScrollBox
@@ -73,8 +71,6 @@ object FormMain: TFormMain
         Padding.Right = 5
         Padding.Bottom = 5
         TabOrder = 1
-        ExplicitLeft = 353
-        ExplicitWidth = 607
         DesignSize = (
           377
           652)
@@ -91,7 +87,6 @@ object FormMain: TFormMain
           EditLabel.Caption = #1043#1086#1088#1086#1076
           LabelPosition = lpLeft
           LabelSpacing = 10
-          ExplicitWidth = 511
         end
         object DBLabeledEditPost: TDBLabeledEdit
           Left = 82
@@ -106,7 +101,6 @@ object FormMain: TFormMain
           EditLabel.Caption = #1044#1086#1083#1078#1085#1086#1089#1090#1100
           LabelPosition = lpLeft
           LabelSpacing = 10
-          ExplicitWidth = 511
         end
         object DBLabeledEditGrade: TDBLabeledEdit
           Left = 82
@@ -121,7 +115,6 @@ object FormMain: TFormMain
           EditLabel.Caption = #1043#1088#1077#1081#1076
           LabelPosition = lpLeft
           LabelSpacing = 10
-          ExplicitWidth = 511
         end
         object DBLabeledEditSection: TDBLabeledEdit
           Left = 82
@@ -136,7 +129,6 @@ object FormMain: TFormMain
           EditLabel.Caption = #1056#1072#1079#1076#1077#1083'(-'#1099')'
           LabelPosition = lpLeft
           LabelSpacing = 10
-          ExplicitWidth = 511
         end
         object DBLabeledEditContact: TDBLabeledEdit
           Left = 82
@@ -151,7 +143,6 @@ object FormMain: TFormMain
           EditLabel.Caption = #1050#1086#1085#1090#1072#1082#1090
           LabelPosition = lpLeft
           LabelSpacing = 10
-          ExplicitWidth = 511
         end
         object EditName: TEdit
           Left = 5
@@ -166,7 +157,6 @@ object FormMain: TFormMain
           Font.Style = []
           ParentFont = False
           TabOrder = 5
-          ExplicitWidth = 593
         end
       end
     end
@@ -200,9 +190,6 @@ object FormMain: TFormMain
         List = True
         ShowCaptions = True
         TabOrder = 1
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 1006
         object ToolButtonAdd: TToolButton
           Left = 0
           Top = 0

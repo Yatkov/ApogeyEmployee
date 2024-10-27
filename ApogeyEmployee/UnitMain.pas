@@ -71,6 +71,7 @@ end;
 
 procedure TFormMain.ToolButtonAddClick(Sender: TObject);
 begin
+  if not Assigned(FormAddEmployee) then Application.CreateForm(TFormAddEmployee, FormAddEmployee);
   FormAddEmployee.show;
 end;
 

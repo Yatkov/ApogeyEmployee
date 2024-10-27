@@ -17,6 +17,6 @@ begin
   Application.Title := 'Сотрудники';
   Application.CreateForm(TDataModule1, DataModule1);
   Application.CreateForm(TFormMain, FormMain);
-  Application.CreateForm(TFormAddEmployee, FormAddEmployee);
+  //Application.CreateForm(TFormAddEmployee, FormAddEmployee);
   Application.Run;
 end.

@@ -5,15 +5,8 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Mask, Vcl.ExtCtrls,
-  Vcl.DBCtrls, Vcl.Buttons, System.ImageList, Vcl.ImgList, Vcl.CheckLst, System.Generics.Collections;
-
-type
-  TSectionInfo = record
-    SectionName: string;
-    SectionID: Integer;
-    ExactSectionName: string;
-    ExactSectionID: Integer;
-  end;
+  Vcl.DBCtrls, Vcl.Buttons, System.ImageList, Vcl.ImgList, Vcl.CheckLst, System.Generics.Collections,
+  Vcl.ComCtrls;
 
 type
   TFormAddEmployee = class(TForm)
@@ -36,77 +29,41 @@ type
     PanelEdits: TPanel;
     PanelConrol: TPanel;
     PanelAddSections: TPanel;
-    GroupBoxSectionName: TGroupBox;
-    PanelSectionNameBtns: TPanel;
-    SpeedButtonSectionNameInc: TSpeedButton;
-    SpeedButtonSectionNameIncAll: TSpeedButton;
-    Bevel6: TBevel;
-    Bevel8: TBevel;
-    SpeedButtonSectionNameEx: TSpeedButton;
-    Bevel9: TBevel;
-    SpeedButtonSectionNameExAll: TSpeedButton;
-    GroupBoxSectionNameSrc: TGroupBox;
-    GroupBoxSectionNameDest: TGroupBox;
-    ListBoxSectionNameSrc: TListBox;
-    ListBoxSectionNameDest: TListBox;
     BitBtnSave: TBitBtn;
     ImageList1: TImageList;
     ButtonCancel: TButton;
     Bevel10: TBevel;
     Bevel11: TBevel;
-    GroupBoxSubSection: TGroupBox;
-    PanelSubSectionBtns: TPanel;
-    SpeedButtonSubSectionInc: TSpeedButton;
-    SpeedButtonSubSectionIncAll: TSpeedButton;
-    Bevel12: TBevel;
-    Bevel13: TBevel;
-    SpeedButtonSubSectionEx: TSpeedButton;
-    Bevel14: TBevel;
-    SpeedButtonSubSectionExAll: TSpeedButton;
-    GroupBoxSubSectionSrc: TGroupBox;
-    ListBoxSubSectionSrc: TListBox;
-    GroupBoxSubSectionDest: TGroupBox;
-    ListBoxSubSectionDest: TListBox;
-    ListBoxSections: TListBox;
-    Bevel15: TBevel;
-    LabelSections: TLabel;
     ShapeMiddleName: TShape;
     LabelMsg: TLabel;
-    Bevel16: TBevel;
     TimerMsg: TTimer;
+    TreeViewSections: TTreeView;
+    StatusBarSectionCounter: TStatusBar;
+    DBEditEmpID: TDBEdit;
     procedure FormCreate(Sender: TObject);
     procedure DBLookupComboBoxPostCloseUp(Sender: TObject);
-    procedure SpeedButtonSectionNameIncClick(Sender: TObject);
-    procedure SpeedButtonSectionNameIncAllClick(Sender: TObject);
-    procedure SpeedButtonSectionNameExClick(Sender: TObject);
-    procedure SpeedButtonSectionNameExAllClick(Sender: TObject);
-    procedure SpeedButtonSubSectionIncClick(Sender: TObject);
-    procedure SpeedButtonSubSectionIncAllClick(Sender: TObject);
-    procedure SpeedButtonSubSectionExClick(Sender: TObject);
-    procedure SpeedButtonSubSectionExAllClick(Sender: TObject);
     procedure BitBtnSaveClick(Sender: TObject);
-    procedure ListBoxSectionNameSrcDblClick(Sender: TObject);
-    procedure ListBoxSectionNameDestDblClick(Sender: TObject);
-    procedure ListBoxSectionNameDestClick(Sender: TObject);
     procedure TimerMsgTimer(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure TreeViewSectionsCheckStateChanging(Sender: TCustomTreeView;
+      Node: TTreeNode; NewCheckState, OldCheckState: TNodeCheckState;
+      var AllowChange: Boolean);
+    procedure ButtonCancelClick(Sender: TObject);
   private
     { Private declarations }
+    UpdatingState: Boolean;
     procedure loadSections;
-    procedure loadSubSections;
-    procedure MoveSelectedToRight(src, dest: TListBox);
-    procedure MoveAllToRight(src, dest: TListBox);
-    procedure MoveSelectedToLeft(src, dest: TListBox);
-    procedure MoveAllToLeft(src, dest: TListBox);
-    procedure checkErrors();
-    procedure UpdateTwoColumnListBox();
+    function checkErrors():boolean;
+    procedure UpdateChildrenCheckState(Node: TTreeNode; State: Integer);
+    procedure UpdateParentCheckState(Node: TTreeNode);
+    procedure checkedCount();
   public
     { Public declarations }
   end;
 
 var
   FormAddEmployee: TFormAddEmployee;
-  SelectedSections: TList<TSectionInfo>;
 
 implementation
 
@@ -114,8 +71,24 @@ implementation
 
 uses DataModule;
 
+procedure TFormAddEmployee.FormClose(Sender: TObject; var Action: TCloseAction);
+var Node: TTreeNode;
+begin
+  Node := TreeViewSections.Items.GetFirstNode;
+  if Assigned(Node) then TreeViewSections.Free;
+  Destroy;
+  FormAddEmployee := nil;
+end;
+
+procedure TFormAddEmployee.FormCloseQuery(Sender: TObject;
+  var CanClose: Boolean);
+begin
+  CanClose:=MessageBox(handle,pchar('Вы хотите отменить добавление сотрудника?'),pchar('Отмена'),36)=IDYes
+end;
+
 procedure TFormAddEmployee.FormCreate(Sender: TObject);
 begin
+  DBEditEmpID.DataField := 'EmployeeID';
   DBLabeledEditMiddleName.DataField := 'middleName';
   DBLabeledEditFirstName.DataField := 'firstName';
   DBLabeledEditLastName.DataField := 'lastName';
@@ -133,21 +106,85 @@ begin
   DBLookupComboBoxGrade.KeyField := 'GradeID';
   DBLookupComboBoxGrade.ListField := 'GradeName';
 
-  SelectedSections := TList<TSectionInfo>.Create;
 end;
 
-procedure TFormAddEmployee.FormDestroy(Sender: TObject);
+// Кнопка отмены
+procedure TFormAddEmployee.ButtonCancelClick(Sender: TObject);
+var Node: TTreeNode;
 begin
-  SelectedSections.Free;
+  Close;
+end;
+
+// Добавление доступных разделов
+procedure TFormAddEmployee.loadSections();
+var Node: TTreeNode;
+begin
+  DataModule1.FDQuerySectionName.SQL.Text := 'SELECT s.SectionNameID, s.Name, e.SectionID, e.FullName'
+                                           + ' FROM SectionName s'
+                                           + ' LEFT JOIN Sections e ON s.SectionNameID = e.SectionNameID'
+                                           + ' WHERE s.PostID = ' + DBLookupComboBoxPost.Field.Text
+                                           + ' ORDER BY s.SectionNameID, e.SectionID';
+  try
+    DataModule1.FDQuerySectionName.Open;
+    TreeViewSections.Items.Clear;
+    var CurrentSectionNode: TTreeNode := nil;
+    var LastSectionID: Integer := -1;
+    while not DataModule1.FDQuerySectionName.Eof do begin
+      if DataModule1.FDQuerySectionName.FieldByName('SectionNameID').AsInteger <> LastSectionID then begin
+        CurrentSectionNode := TreeViewSections.Items.Add(nil, DataModule1.FDQuerySectionName.FieldByName('Name').AsString);
+        CurrentSectionNode.Data := TObject(DataModule1.FDQuerySectionName.FieldByName('SectionNameID').AsInteger);
+        LastSectionID := DataModule1.FDQuerySectionName.FieldByName('SectionNameID').AsInteger;
+      end;
+
+      if not DataModule1.FDQuerySectionName.FieldByName('SectionID').IsNull then begin
+        var SubsectionNode := TreeViewSections.Items.AddChild(CurrentSectionNode, DataModule1.FDQuerySectionName.FieldByName('FullName').AsString);
+        SubsectionNode.Data := TObject(DataModule1.FDQuerySectionName.FieldByName('SectionID').AsInteger);
+      end;
+      DataModule1.FDQuerySectionName.Next;
+    end;
+  finally
+    DataModule1.FDQuerySectionName.Close;
+  end;
+
+  Node := TreeViewSections.Items.GetFirstNode;
+  while Assigned(Node) do begin
+    Node.Checked := true;
+    Node.Checked := false;
+    Node := Node.getNext;
+  end;
 end;
 
 procedure TFormAddEmployee.BitBtnSaveClick(Sender: TObject);
+var Node: TTreeNode;
 begin
-  checkErrors();
+  if checkErrors() then begin
+    try
+      Node := TreeViewSections.Items.GetFirstNode;
+      while Assigned(Node) do begin
+        if (Node.Level = 0) and (Node.StateIndex <> 1) then begin
+          DataModule1.FDQuerySectionName.SQL.Text := 'INSERT INTO EmployeeSections (EmployeeID, SectionNameID, SectionID)'
+                                                 + ' VALUES (:EmployeeID, :SectionNameID, :SectionID)';
+          DataModule1.FDQuerySectionName.ParamByName('EmployeeID').AsInteger := StrToInt(DBEditEmpID.Text);
+          DataModule1.FDQuerySectionName.ParamByName('SectionNameID').AsInteger := Integer(Node.Parent.Data);
+          //DataModule1.FDQuerySectionName.ExecSQL;
+        end else if (Node.Level = 1) and (Node.StateIndex <> 1) then begin
+          DataModule1.FDQuerySectionName.SQL.Text := 'INSERT INTO EmployeeSections (EmployeeID, SectionNameID, SectionID)'
+                                                 + ' VALUES (:EmployeeID, :SectionNameID, :SectionID)';
+          DataModule1.FDQuerySectionName.ParamByName('EmployeeID').AsInteger := StrToInt(DBEditEmpID.Text);
+          DataModule1.FDQuerySectionName.ParamByName('SectionNameID').AsInteger := Integer(Node.Parent.Data);
+          DataModule1.FDQuerySectionName.ParamByName('SectionID').AsInteger := Integer(Node.Data);
+          DataModule1.FDQuerySectionName.ExecSQL;
+        end;
+        Node := Node.getNext;
+      end;
+    finally
+      DataModule1.FDQuerySectionName.Close;
+    end;
+  end;
 end;
 
 // Проверка на корректность заполнения
-procedure TFormAddEmployee.checkErrors();
+function TFormAddEmployee.checkErrors():boolean;
 var error1, error2, error3, error4: boolean;
 begin
   error1 := DBLabeledEditMiddleName.Text = '';
@@ -160,6 +197,8 @@ begin
     LabelMsg.Caption := 'Заполните все необходимые поля!';
     TimerMsg.Enabled := true;
   end;
+
+  checkErrors := not error1 and not error2 and not error3;
 end;
 
 // Завершение работы таймера ошибок
@@ -168,6 +207,98 @@ begin
   shapeMiddleName.Pen.Color := $00383226;
   LabelMsg.Caption := '';
   TimerMsg.Enabled := false;
+end;
+
+procedure TFormAddEmployee.TreeViewSectionsCheckStateChanging(
+  Sender: TCustomTreeView; Node: TTreeNode; NewCheckState,
+  OldCheckState: TNodeCheckState; var AllowChange: Boolean);
+begin
+  if UpdatingState then begin
+	  AllowChange := True; // Позволяем стандартное изменение, если это вызов из нашего кода
+	  Exit;
+  end;
+
+  AllowChange := False; // Блокируем стандартное изменение для ручного контроля
+  UpdatingState := True;
+  try
+	  if Node.HasChildren then begin
+		  case Node.StateIndex of
+			  1: Node.StateIndex := 3; // Unchecked -> Partial
+			  3: begin
+				    Node.StateIndex := 2; // Partial -> Checked
+				    UpdateChildrenCheckState(Node, 2); // Отмечаем все дочерние
+			     end;
+			  2: begin
+				    Node.StateIndex := 1; // Checked -> Unchecked
+				    UpdateChildrenCheckState(Node, 1); // Снимаем галочки с дочерних
+			     end;
+			  end;
+		end else begin // Обычное поведение для элементов без дочерних
+			if Node.StateIndex = 2 then Node.StateIndex := 1
+			else Node.StateIndex := 2;
+ 		if Node.Parent <> nil then
+   			UpdateParentCheckState(Node.Parent);
+		end;
+		finally
+		UpdatingState := False;
+	end;
+
+  checkedCount();
+end;
+
+procedure TFormAddEmployee.checkedCount();
+var Node: TTreeNode;
+    counter: Integer;
+begin
+  Node := TreeViewSections.Items.GetFirstNode;
+  counter := 0;
+  while Assigned(Node) do begin
+    if Node.StateIndex <> 1 then inc(counter);
+    Node := Node.getNext;
+  end;
+
+  StatusBarSectionCounter.Panels[0].Text := 'Выбрано разделов (с подразделами): ' + IntToStr(counter);
+end;
+
+procedure TFormAddEmployee.UpdateChildrenCheckState(Node: TTreeNode; State: Integer);
+var ChildNode: TTreeNode;
+begin
+  ChildNode := Node.getFirstChild;
+  while ChildNode <> nil do
+  begin
+    ChildNode.StateIndex := State;
+    UpdateChildrenCheckState(ChildNode, State);
+    ChildNode := ChildNode.getNextSibling;
+  end;
+end;
+
+procedure TFormAddEmployee.UpdateParentCheckState(Node: TTreeNode);
+var
+  ChildNode: TTreeNode;
+  AllChecked, NoneChecked: Boolean;
+begin
+  AllChecked := True;
+  NoneChecked := True;
+  ChildNode := Node.getFirstChild;
+  while ChildNode <> nil do
+  begin
+    if ChildNode.StateIndex <> 2 then
+      AllChecked := False;
+    if ChildNode.StateIndex <> 1 then
+      NoneChecked := False;
+    ChildNode := ChildNode.getNextSibling;
+  end;
+
+  if AllChecked then
+    Node.StateIndex := 2
+  else if NoneChecked then
+    Node.StateIndex := 1
+  else
+    Node.StateIndex := 3;
+
+  // Обновляем родителя текущего узла
+  if Node.Parent <> nil then
+    UpdateParentCheckState(Node.Parent);
 end;
 
 procedure TFormAddEmployee.DBLookupComboBoxPostCloseUp(Sender: TObject);
@@ -186,207 +317,6 @@ begin
   end else begin
     LabelGrade.Enabled := False;
     DBLookupComboBoxGrade.Enabled := False;
-  end;
-end;
-
-// Добавление доступных разделов
-procedure TFormAddEmployee.loadSections();
-begin
-  ListBoxSectionNameSrc.Clear;
-  ListBoxSectionNameDest.Clear;
-    DataModule1.FDQuerySectionName.SQL.Text := 'SELECT SectionNameID, Name FROM SectionName WHERE PostID = ' + DBLookupComboBoxPost.Field.Text;
-    try
-      DataModule1.FDQuerySectionName.Open;
-      while not(DataModule1.FDQuerySectionName.Eof) do begin
-        ListBoxSectionNameSrc.Items.AddObject(DataModule1.FDQuerySectionName.FieldByName('Name').AsString,
-          TObject(DataModule1.FDQuerySectionName.FieldByName('SectionNameID').asInteger));
-        DataModule1.FDQuerySectionName.Next;
-      end;
-    finally
-      DataModule1.FDQuerySectionName.Close;
-    end;
-end;
-
-procedure TFormAddEmployee.ListBoxSectionNameDestClick(Sender: TObject);
-begin
-  if ListBoxSectionNameDest.ItemIndex <> -1 then begin
-    GroupBoxSubSection.Caption := 'Подразделы';
-    loadSubSections;
-  end;
-end;
-
-// Добавление доступных подразделов
-procedure TFormAddEmployee.loadSubSections();
-begin
-  ListBoxSubSectionSrc.Clear;
-  ListBoxSubSectionDest.Clear;
-  DataModule1.FDQuerySectionName.SQL.Text := 'SELECT SectionID, FullName FROM Sections WHERE SectionNameID = ' + IntToStr(Integer(ListBoxSectionNameDest.Items.Objects[ListBoxSectionNameDest.ItemIndex]));
-  try
-    DataModule1.FDQuerySectionName.Open;
-    if DataModule1.FDQuerySectionName.RecordCount <= 0 then GroupBoxSubSection.Caption := 'Подразделы для ' + ListBoxSectionNameDest.Items[ListBoxSectionNameDest.ItemIndex]
-    else begin
-      while not(DataModule1.FDQuerySectionName.Eof) do begin
-        ListBoxSubSectionSrc.Items.AddObject(DataModule1.FDQuerySectionName.FieldByName('FullName').AsString,
-          TObject(DataModule1.FDQuerySectionName.FieldByName('SectionID').asInteger));
-        DataModule1.FDQuerySectionName.Next;
-      end;
-      GroupBoxSubSection.Caption := 'Подразделы для ' + ListBoxSectionNameDest.Items[ListBoxSectionNameDest.ItemIndex];
-    end;
-  finally
-    DataModule1.FDQuerySectionName.Close;
-  end;
-end;
-
-// Переместить выбранную запись вправо
-procedure TFormAddEmployee.MoveSelectedToRight(src, dest: TListBox);
-var Index: Integer;
-    SectionInfo: TSectionInfo;
-begin
-  if src.ItemIndex <> -1 then
-  begin
-    Index := src.ItemIndex;
-    dest.Items.AddObject(
-      src.Items[Index],
-      src.Items.Objects[Index]
-    );
-
-    if dest = ListBoxSectionNameDest then begin
-      SectionInfo.SectionName := dest.Items[dest.count-1];
-      SectionInfo.SectionID := Integer(dest.Items.Objects[dest.count-1]);
-      SectionInfo.ExactSectionName := '';
-      SectionInfo.ExactSectionID := 0;
-
-      SelectedSections.Add(SectionInfo);
-    end;
-
-    if dest = ListBoxSubSectionDest then begin
-      for var i := 0 to SelectedSections.Count - 1 do begin
-        if SelectedSections[i].SectionID = Integer(ListBoxSectionNameDest.Items.Objects[dest.count-1]) then begin
-          SectionInfo := SelectedSections[i];
-          SectionInfo.SectionID := Integer(dest.Items.Objects[dest.count-1]);
-          SectionInfo.ExactSectionName := dest.Items[dest.count-1];
-          SelectedSections[i] := SectionInfo;
-          Break;
-        end;
-      end;
-    end;
-
-    UpdateTwoColumnListBox();
-
-    src.Items.Delete(Index);
-  end;
-end;
-
-procedure TFormAddEmployee.SpeedButtonSectionNameIncClick(Sender: TObject);
-begin
-  MoveSelectedToRight(ListBoxSectionNameSrc, ListBoxSectionNameDest);
-end;
-
-procedure TFormAddEmployee.SpeedButtonSubSectionIncClick(Sender: TObject);
-begin
-  MoveSelectedToRight(ListBoxSubSectionSrc, ListBoxSubSectionDest);
-end;
-
-procedure TFormAddEmployee.ListBoxSectionNameSrcDblClick(Sender: TObject);
-begin
-  ListBoxSubSectionSrc.Clear;
-  ListBoxSubSectionDest.Clear;
-  GroupBoxSubSection.Caption := 'Подразделы';
-  MoveSelectedToRight(ListBoxSectionNameSrc, ListBoxSectionNameDest);
-end;
-
-// Переместить все записи вправо
-procedure TFormAddEmployee.MoveAllToRight(src, dest: TListBox);
-var
-  I: Integer;
-begin
-  for I := 0 to src.Count - 1 do
-    dest.Items.AddObject(
-      src.Items[I],
-      src.Items.Objects[I]
-    );
-  src.Clear;
-end;
-
-procedure TFormAddEmployee.SpeedButtonSectionNameIncAllClick(Sender: TObject);
-begin
-  MoveAllToRight(ListBoxSectionNameSrc, ListBoxSectionNameDest);
-end;
-
-procedure TFormAddEmployee.SpeedButtonSubSectionIncAllClick(Sender: TObject);
-begin
-  MoveAllToRight(ListBoxSubSectionSrc, ListBoxSubSectionDest);
-end;
-
-// Переместить выбранную запись влево
-procedure TFormAddEmployee.MoveSelectedToLeft(src, dest: TListBox);
-var
-  Index: Integer;
-begin
-  if dest.ItemIndex <> -1 then
-  begin
-    Index := dest.ItemIndex;
-    src.Items.AddObject(
-      dest.Items[Index],
-      dest.Items.Objects[Index]
-    );
-    dest.Items.Delete(Index);
-  end;
-end;
-
-procedure TFormAddEmployee.SpeedButtonSectionNameExClick(Sender: TObject);
-begin
-  MoveSelectedToLeft(ListBoxSectionNameSrc, ListBoxSectionNameDest);
-end;
-
-procedure TFormAddEmployee.SpeedButtonSubSectionExClick(Sender: TObject);
-begin
-  MoveSelectedToLeft(ListBoxSubSectionSrc, ListBoxSubSectionDest);
-end;
-
-procedure TFormAddEmployee.ListBoxSectionNameDestDblClick(Sender: TObject);
-begin
-  ListBoxSubSectionSrc.Clear;
-  ListBoxSubSectionDest.Clear;
-  GroupBoxSubSection.Caption := 'Подразделы';
-  MoveSelectedToLeft(ListBoxSectionNameSrc, ListBoxSectionNameDest);
-end;
-
-// Переместить все записи влево
-procedure TFormAddEmployee.MoveAllToLeft(src, dest: TListBox);
-var
-  I: Integer;
-begin
-  for I := 0 to dest.Count - 1 do
-    src.Items.AddObject(
-      dest.Items[I],
-      dest.Items.Objects[I]
-    );
-  dest.Clear;
-end;
-
-procedure TFormAddEmployee.SpeedButtonSectionNameExAllClick(Sender: TObject);
-begin
-  MoveAllToLeft(ListBoxSectionNameSrc, ListBoxSectionNameDest);
-end;
-
-procedure TFormAddEmployee.SpeedButtonSubSectionExAllClick(Sender: TObject);
-begin
-  MoveAllToLeft(ListBoxSubSectionSrc, ListBoxSubSectionDest);
-end;
-
-procedure TFormAddEmployee.UpdateTwoColumnListBox();
-var
-  I: Integer;
-  DisplayText: string;
-begin
-  ListBoxSections.Clear;
-  for I := 0 to SelectedSections.Count - 1 do
-  begin
-    DisplayText := SelectedSections[I].SectionName;
-    if SelectedSections[I].ExactSectionName <> '' then
-      DisplayText := DisplayText + ' - ' + SelectedSections[I].ExactSectionName;
-    ListBoxSections.Items.Add(DisplayText);
   end;
 end;
 
