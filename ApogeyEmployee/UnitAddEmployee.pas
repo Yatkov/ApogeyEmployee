@@ -58,6 +58,7 @@ type
     procedure UpdateChildrenCheckState(Node: TTreeNode; State: Integer);
     procedure UpdateParentCheckState(Node: TTreeNode);
     procedure checkedCount();
+    procedure checkDublicateSection(sectionNameId: String);
   public
     { Public declarations }
   end;
@@ -162,15 +163,22 @@ begin
       Node := TreeViewSections.Items.GetFirstNode;
       while Assigned(Node) do begin
         if (Node.Level = 0) and (Node.StateIndex <> 1) then begin
-          DataModule1.FDQuerySectionName.SQL.Text := 'INSERT INTO EmployeeSections (EmployeeID, SectionNameID)'
+          DataModule1.FDQuerySectionName.SQL.Text := 'Select EmployeeID, SectionNameID'
+                                           + ' From EmployeeSections'
+                                           + ' WHERE EmployeeID = '+DBEditEmpID.Text+' AND SectionNameID = '+IntToStr(Integer(Node.Data));
+          DataModule1.FDQuerySectionName.Open;
+          if DataModule1.FDQuerySectionName.RecordCount = 0 then begin
+            DataModule1.FDQuerySectionName.SQL.Text := 'INSERT INTO EmployeeSections (EmployeeID, SectionNameID)'
                                                  + ' VALUES (:EmployeeID, :SectionNameID)';
-          DataModule1.FDQuerySectionName.ParamByName('EmployeeID').AsInteger := StrToInt(DBEditEmpID.Text);
-          DataModule1.FDQuerySectionName.ParamByName('SectionNameID').AsInteger := Integer(Node.Data);
-          DataModule1.FDQuerySectionName.ExecSQL;
+            DataModule1.FDQuerySectionName.ParamByName('EmployeeID').AsInteger := StrToInt(DBEditEmpID.Text);
+            DataModule1.FDQuerySectionName.ParamByName('SectionNameID').AsInteger := Integer(Node.Data);
+            DataModule1.FDQuerySectionName.ExecSQL;
+          end;
 
         end else if (Node.Level = 1) and (Node.StateIndex <> 1) then begin
+          checkDublicateSection(IntToStr(Integer(Node.Parent.Data)));
           DataModule1.FDQuerySectionName.SQL.Text := 'INSERT INTO EmployeeSections (EmployeeID, SectionNameID, SectionID)'
-                                                 + ' VALUES (:EmployeeID, :SectionNameID, :SectionID)';
+                                                   + ' VALUES (:EmployeeID, :SectionNameID, :SectionID)';
           DataModule1.FDQuerySectionName.ParamByName('EmployeeID').AsInteger := StrToInt(DBEditEmpID.Text);
           DataModule1.FDQuerySectionName.ParamByName('SectionNameID').AsInteger := Integer(Node.Parent.Data);
           DataModule1.FDQuerySectionName.ParamByName('SectionID').AsInteger := Integer(Node.Data);
@@ -182,6 +190,25 @@ begin
       DataModule1.FDQuerySectionName.Close;
     end;
   end;
+end;
+
+procedure TFormAddEmployee.checkDublicateSection(sectionNameId: String);
+begin
+  DataModule1.FDQuerySectionName.SQL.Text := 'Select EmployeeID, SectionNameID, SectionID'
+                                           + ' From EmployeeSections'
+                                           + ' WHERE EmployeeID = '+DBEditEmpID.Text+' AND SectionNameID = '+sectionNameId+' AND SectionID IS NULL';
+  try
+    DataModule1.FDQuerySectionName.Open;
+    if DataModule1.FDQuerySectionName.RecordCount > 0 then begin
+      DataModule1.FDQuerySectionName.Close;
+      DataModule1.FDQuerySectionName.SQL.Text := 'Delete From EmployeeSections'
+                                               + ' WHERE EmployeeID = 1 AND SectionNameID = 4 AND SectionID IS NULL';
+      DataModule1.FDQuerySectionName.ExecSQL;
+    end;
+  finally
+    DataModule1.FDQuerySectionName.Close;
+  end;
+
 end;
 
 // Проверка на корректность заполнения

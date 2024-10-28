@@ -29,20 +29,14 @@ Coordinates=667,1,219,36
 Coordinates=151,78,140,36
 Visible=True
 
-[SearchBox1]
-Coordinates=10,10,84,58
-
 [PanelEmployeesList]
 Coordinates=10,78,131,58
 
 []
-Coordinates=486,160,91,36
+Coordinates=448,261,143,36
 
 [ScrollBoxEmployeeInfo]
 Coordinates=448,1,148,36
-
-[EditName]
-Coordinates=102,1,71,58
 
 [DBLabeledEditCity]
 Coordinates=448,53,123,36
@@ -54,9 +48,9 @@ Visible=True
 [DBLabeledEditGrade]
 Coordinates=312,80,136,36
 
-[DBLabeledEditSection]
-Coordinates=448,261,143,36
-
 [DBLabeledEditContact]
 Coordinates=448,209,145,36
+
+[SearchBoxFindEmployee]
+Coordinates=10,10,84,58
 

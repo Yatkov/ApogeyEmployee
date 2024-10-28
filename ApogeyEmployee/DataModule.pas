@@ -25,6 +25,8 @@ type
     FDQueryEmployee: TFDQuery;
     DataSourceEmployeeSQL: TDataSource;
     FDQuerySectionName: TFDQuery;
+    FDQuerySections: TFDQuery;
+    DataSourceQuerySections: TDataSource;
     procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }
@@ -70,6 +72,9 @@ begin
 
     FDQuerySectionName.ConnectionName :=  FDConEmployee.ConnectionName;
     FDQuerySectionName.Connection := FDConEmployee;
+
+    FDQuerySections.ConnectionName := FDConEmployee.ConnectionName;
+    FDQuerySections.Connection := FDConEmployee;
   finally
 
   end;
