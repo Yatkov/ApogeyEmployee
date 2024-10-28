@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Data.DB, Vcl.Grids,
   Vcl.DBGrids, Vcl.ExtCtrls, Vcl.ToolWin, Vcl.Mask, Vcl.DBCtrls, Vcl.StdCtrls,
-  Vcl.WinXCtrls, Vcl.DBCGrids;
+  Vcl.WinXCtrls, Vcl.DBCGrids, shellApi;
 
 type
   TFormMain = class(TForm)
@@ -31,16 +31,24 @@ type
     Bevel3: TBevel;
     Bevel5: TBevel;
     Bevel6: TBevel;
-    DBEditName: TDBEdit;
-    LabelSection: TLabel;
-    DBGrid1: TDBGrid;
+    DBGridSections: TDBGrid;
     DBEditEmployeeID: TDBEdit;
+    ToolBar1: TToolBar;
+    ToolButton1: TToolButton;
+    DBLabeledEditName: TDBLabeledEdit;
+    LinkLabelShowMap: TLinkLabel;
+    PanelSections: TPanel;
     procedure SearchBoxFindEmployeeChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ToolButtonAddClick(Sender: TObject);
     procedure DBEditEmployeeIDChange(Sender: TObject);
+    procedure TabSheetReadShow(Sender: TObject);
+    procedure LinkLabelShowMapLinkClick(Sender: TObject; const Link: string;
+      LinkType: TSysLinkType);
   private
     { Private declarations }
+    procedure reloadEmployeeGrid();
+    procedure reloadSectionsGrid();
   public
     { Public declarations }
   end;
@@ -55,16 +63,23 @@ implementation
 uses DataModule, UnitAddEmployee;
 
 procedure TFormMain.DBEditEmployeeIDChange(Sender: TObject);
+var mapLink: String;
 begin
   if DBEditEmployeeID.Text <> '' then begin
-
-  DataModule1.FDQuerySections.Close;
-  DataModule1.FDQuerySections.SQL.Text := 'SELECT SectionName.Name Раздел, Sections.FullName Подраздел'
-                                + ' FROM EmployeeSections es'
-                                + ' JOIN SectionName ON es.SectionNameID = SectionName.SectionNameID'
-                                + ' LEFT JOIN Sections ON es.SectionID = Sections.SectionID'
-                                + ' WHERE es.EmployeeID = ' + DBEditEmployeeID.Text;
-  DataModule1.FDQuerySections.Open;
+    reloadSectionsGrid();
+    if DBGridEmployeesList.FieldCount > 1 then begin
+      DataModule1.FDQuerySectionName.Close;
+      DataModule1.FDQuerySectionName.SQL.Text := 'SELECT mapLink FROM Cities WHERE name = "' + DBGridEmployeesList.Columns[1].Field.Text + '"';
+      DataModule1.FDQuerySectionName.Open;
+      mapLink := DataModule1.FDQuerySectionName.FieldByName('mapLink').AsString;
+      LinkLabelShowMap.Caption := '<a href="'+mapLink+'">Показать на карте</a>';
+    end else begin
+      DataModule1.FDQuerySectionName.Close;
+      DataModule1.FDQuerySectionName.SQL.Text := 'SELECT mapLink FROM Cities WHERE CityID = "' + DBGridEmployees.Columns[4].Field.Text + '"';
+      DataModule1.FDQuerySectionName.Open;
+      mapLink := DataModule1.FDQuerySectionName.FieldByName('mapLink').AsString;
+      LinkLabelShowMap.Caption := '<a href="'+mapLink+'">Показать на карте</a>';
+    end;
   end;
 end;
 
@@ -74,32 +89,23 @@ begin
   DataModule1.FDTableEmployee.Open;
   DataModule1.FDTableCity.Open;
   DataModule1.FDTablePost.Open;
-  DataModule1.FDQueryEmployee.SQL.Text := 'Select middleName || " " || firstName || " " || lastName ФИО, Cities.name Город, Posts.PostName Должность, Grades.GradeName Грейд, tgContact, EmployeeID'
-                                          +' FROM Employee e'
-                                          +' JOIN Cities ON e.city = Cities.CityID'
-                                          +' JOIN Posts ON e.post = Posts.PostID'
-                                          +' JOIN Grades ON e.grade = Grades.GradeID';
-  DataModule1.FDQueryEmployee.Open;
 
-  DBGridEmployeesList.Columns[0].Width := 200;
-  DBGridEmployeesList.Columns[1].Width := 150;
-  DBGridEmployeesList.Columns[2].Width := 150;
-  DBGridEmployeesList.Columns[3].Width := 150;
-  DBGridEmployeesList.Columns[4].Visible := false;
+  //reloadEmployeeGrid();
 
-  DBEditName.DataField := 'ФИО';
+  DBLabeledEditName.DataField := 'ФИО';
   DBLabeledEditCity.DataField := 'Город';
   DBLabeledEditPost.DataField := 'Должность';
   DBLabeledEditGrade.DataField := 'Грейд';
   DBLabeledEditContact.DataField := 'tgContact';
   DBEditEmployeeID.DataField := 'EmployeeID';
 
-  DataModule1.FDQuerySections.SQL.Text := 'SELECT SectionName.Name Раздел, Sections.FullName Подраздел'
-                                + ' FROM EmployeeSections es'
-                                + ' JOIN SectionName ON es.SectionNameID = SectionName.SectionNameID'
-                                + ' LEFT JOIN Sections ON es.SectionID = Sections.SectionID'
-                                + ' WHERE es.EmployeeID = ' + DBEditEmployeeID.Text;
-  DataModule1.FDQuerySections.Open;
+  //reloadSectionsGrid();
+end;
+
+procedure TFormMain.LinkLabelShowMapLinkClick(Sender: TObject;
+  const Link: string; LinkType: TSysLinkType);
+begin
+  ShellExecute(Handle, 'open', PChar(Link), nil, nil, SW_NORMAL );
 end;
 
 procedure TFormMain.SearchBoxFindEmployeeChange(Sender: TObject);
@@ -107,10 +113,51 @@ begin
   //DataModule1.FDConEmployee.DriverName := 'SQLite';
 end;
 
+procedure TFormMain.TabSheetReadShow(Sender: TObject);
+begin
+  reloadEmployeeGrid;
+end;
+
 procedure TFormMain.ToolButtonAddClick(Sender: TObject);
+var id: String;
 begin
   if not Assigned(FormAddEmployee) then Application.CreateForm(TFormAddEmployee, FormAddEmployee);
+  DataModule1.FDTableEmployee.Last;
+  id := DBGridEmployees.Columns[0].Field.Text;
+  DataModule1.FDTableEmployee.Insert;
   FormAddEmployee.show;
+  if id = '' then id := '1'
+  else FormAddEmployee.DBEditEmpID.Text := IntToStr(StrToInt(id)+1);
+end;
+
+procedure TFormMain.reloadEmployeeGrid();
+begin
+  DataModule1.FDQueryEmployee.Close;
+  DataModule1.FDQueryEmployee.SQL.Text := 'Select middleName || " " || firstName || " " || lastName ФИО, Cities.name Город, Posts.PostName Должность, Grades.GradeName Грейд, tgContact, EmployeeID'
+                                          +' FROM Employee e'
+                                          +' JOIN Cities ON e.city = Cities.CityID'
+                                          +' JOIN Posts ON e.post = Posts.PostID'
+                                          +' JOIN Grades ON e.grade = Grades.GradeID';
+  DataModule1.FDQueryEmployee.Open;
+  DBGridEmployeesList.Columns[0].Width := 200;
+  DBGridEmployeesList.Columns[1].Width := 150;
+  DBGridEmployeesList.Columns[2].Width := 150;
+  DBGridEmployeesList.Columns[3].Width := 150;
+  DBGridEmployeesList.Columns[4].Visible := false;
+  DBGridEmployeesList.Columns[5].Visible := false;
+end;
+
+procedure TFormMain.reloadSectionsGrid();
+begin
+  DataModule1.FDQuerySections.Close;
+  DataModule1.FDQuerySections.SQL.Text := 'SELECT SectionName.Name Раздел, Sections.FullName Подраздел'
+                                + ' FROM EmployeeSections es'
+                                + ' JOIN SectionName ON es.SectionNameID = SectionName.SectionNameID'
+                                + ' LEFT JOIN Sections ON es.SectionID = Sections.SectionID'
+                                + ' WHERE es.EmployeeID = ' + DBEditEmployeeID.Text;
+  DataModule1.FDQuerySections.Open;
+  DBGridSections.Columns[0].Width := 250;
+  DBGridSections.Columns[1].Width := 250;
 end;
 
 end.

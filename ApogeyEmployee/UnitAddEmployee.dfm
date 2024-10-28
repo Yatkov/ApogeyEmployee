@@ -52,7 +52,7 @@ object FormAddEmployee: TFormAddEmployee
     object LabelPost: TLabel
       Left = 8
       Top = 188
-      Width = 64
+      Width = 62
       Height = 15
       Caption = #1044#1086#1083#1078#1085#1086#1089#1090#1100
       FocusControl = DBLookupComboBoxPost
@@ -195,7 +195,7 @@ object FormAddEmployee: TFormAddEmployee
       Align = alTop
       DataSource = DataModule1.DataSourceEmployee
       TabOrder = 5
-      EditLabel.Width = 52
+      EditLabel.Width = 51
       EditLabel.Height = 23
       EditLabel.Caption = #1054#1090#1095#1077#1089#1090#1074#1086
       LabelPosition = lpLeft
@@ -209,7 +209,7 @@ object FormAddEmployee: TFormAddEmployee
       Align = alTop
       DataSource = DataModule1.DataSourceEmployee
       TabOrder = 6
-      EditLabel.Width = 58
+      EditLabel.Width = 57
       EditLabel.Height = 23
       EditLabel.Caption = #1058#1043' '#1082#1086#1085#1090#1072#1082#1090
       LabelPosition = lpLeft
@@ -223,7 +223,6 @@ object FormAddEmployee: TFormAddEmployee
       DataSource = DataModule1.DataSourceEmployee
       ReadOnly = True
       TabOrder = 7
-      Visible = False
     end
   end
   object PanelConrol: TPanel

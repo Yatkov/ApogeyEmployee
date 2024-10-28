@@ -65,6 +65,7 @@ type
 
 var
   FormAddEmployee: TFormAddEmployee;
+  isSave: boolean;
 
 implementation
 
@@ -75,6 +76,7 @@ uses DataModule;
 procedure TFormAddEmployee.FormClose(Sender: TObject; var Action: TCloseAction);
 var Node: TTreeNode;
 begin
+  if not isSave then DataModule1.FDTableEmployee.Delete;
   Node := TreeViewSections.Items.GetFirstNode;
   if Assigned(Node) then TreeViewSections.Free;
   Destroy;
@@ -84,6 +86,10 @@ end;
 procedure TFormAddEmployee.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
 begin
+  if isSave then begin
+    CanClose := true;
+    Exit;
+  end;
   CanClose:=MessageBox(handle,pchar('Вы хотите отменить добавление сотрудника?'),pchar('Отмена'),36)=IDYes
 end;
 
@@ -107,6 +113,7 @@ begin
   DBLookupComboBoxGrade.KeyField := 'GradeID';
   DBLookupComboBoxGrade.ListField := 'GradeName';
 
+  isSave := false;
 end;
 
 // Кнопка отмены
@@ -160,6 +167,7 @@ var Node: TTreeNode;
 begin
   if checkErrors() then begin
     try
+      DataModule1.FDTableEmployee.Post;
       Node := TreeViewSections.Items.GetFirstNode;
       while Assigned(Node) do begin
         if (Node.Level = 0) and (Node.StateIndex <> 1) then begin
@@ -168,6 +176,7 @@ begin
                                            + ' WHERE EmployeeID = '+DBEditEmpID.Text+' AND SectionNameID = '+IntToStr(Integer(Node.Data));
           DataModule1.FDQuerySectionName.Open;
           if DataModule1.FDQuerySectionName.RecordCount = 0 then begin
+            DataModule1.FDQuerySectionName.Close;
             DataModule1.FDQuerySectionName.SQL.Text := 'INSERT INTO EmployeeSections (EmployeeID, SectionNameID)'
                                                  + ' VALUES (:EmployeeID, :SectionNameID)';
             DataModule1.FDQuerySectionName.ParamByName('EmployeeID').AsInteger := StrToInt(DBEditEmpID.Text);
@@ -186,6 +195,8 @@ begin
         end;
         Node := Node.getNext;
       end;
+      isSave := true;
+      Close;
     finally
       DataModule1.FDQuerySectionName.Close;
     end;
