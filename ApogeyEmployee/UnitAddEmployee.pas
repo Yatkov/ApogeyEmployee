@@ -162,11 +162,12 @@ begin
       Node := TreeViewSections.Items.GetFirstNode;
       while Assigned(Node) do begin
         if (Node.Level = 0) and (Node.StateIndex <> 1) then begin
-          DataModule1.FDQuerySectionName.SQL.Text := 'INSERT INTO EmployeeSections (EmployeeID, SectionNameID, SectionID)'
-                                                 + ' VALUES (:EmployeeID, :SectionNameID, :SectionID)';
+          DataModule1.FDQuerySectionName.SQL.Text := 'INSERT INTO EmployeeSections (EmployeeID, SectionNameID)'
+                                                 + ' VALUES (:EmployeeID, :SectionNameID)';
           DataModule1.FDQuerySectionName.ParamByName('EmployeeID').AsInteger := StrToInt(DBEditEmpID.Text);
-          DataModule1.FDQuerySectionName.ParamByName('SectionNameID').AsInteger := Integer(Node.Parent.Data);
-          //DataModule1.FDQuerySectionName.ExecSQL;
+          DataModule1.FDQuerySectionName.ParamByName('SectionNameID').AsInteger := Integer(Node.Data);
+          DataModule1.FDQuerySectionName.ExecSQL;
+
         end else if (Node.Level = 1) and (Node.StateIndex <> 1) then begin
           DataModule1.FDQuerySectionName.SQL.Text := 'INSERT INTO EmployeeSections (EmployeeID, SectionNameID, SectionID)'
                                                  + ' VALUES (:EmployeeID, :SectionNameID, :SectionID)';
