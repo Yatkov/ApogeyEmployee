@@ -33,7 +33,6 @@ type
     DBGridSections: TDBGrid;
     DBEditEmployeeID: TDBEdit;
     DBLabeledEditName: TDBLabeledEdit;
-    LinkLabelShowMap: TLinkLabel;
     PanelSections: TPanel;
     PanelDBControl: TPanel;
     ButtonSearchSettings: TButton;
@@ -43,17 +42,27 @@ type
     N3: TMenuItem;
     N4: TMenuItem;
     DBTextContact: TDBText;
+    ImageList: TImageList;
+    BitBtnEmployeeEdit: TBitBtn;
+    PanelEmployeeEdit: TPanel;
+    LabelMapLink: TLabel;
+    BitBtnSectionsFind: TBitBtn;
+    Bevel4: TBevel;
     procedure SearchBoxFindEmployeeChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ToolButtonAddClick(Sender: TObject);
     procedure DBEditEmployeeIDChange(Sender: TObject);
     procedure TabSheetReadShow(Sender: TObject);
-    procedure LinkLabelShowMapLinkClick(Sender: TObject; const Link: string;
-      LinkType: TSysLinkType);
     procedure NSearchSettingClick(Sender: TObject);
     procedure DBTextContactMouseEnter(Sender: TObject);
     procedure DBTextContactMouseLeave(Sender: TObject);
     procedure DBTextContactClick(Sender: TObject);
+    procedure BitBtnEmployeeEditClick(Sender: TObject);
+    procedure ToolButtonDeleteClick(Sender: TObject);
+    procedure LabelMapLinkClick(Sender: TObject);
+    procedure LabelMapLinkMouseEnter(Sender: TObject);
+    procedure LabelMapLinkMouseLeave(Sender: TObject);
+    procedure BitBtnSectionsFindClick(Sender: TObject);
   private
     { Private declarations }
     procedure reloadEmployeeGrid();
@@ -69,7 +78,25 @@ implementation
 
 {$R *.dfm}
 
-uses DataModule, UnitAddEmployee;
+uses DataModule, UnitAddEmployee, UnitSectionsFind;
+
+procedure TFormMain.BitBtnEmployeeEditClick(Sender: TObject);
+begin
+  if not Assigned(FormAddEmployee) then Application.CreateForm(TFormAddEmployee, FormAddEmployee);
+  DataModule1.FDTableEmployee.Edit;
+  FormAddEmployee.isEdit := true;
+  FormAddEmployee.show;
+  FormAddEmployee.Caption := 'Редактировать сотрудника';
+  FormAddEmployee.loadSections;
+  FormAddEmployee.selectSections;
+  FormAddEmployee.DBLookupComboBoxPostCloseUp(Self);
+end;
+
+procedure TFormMain.BitBtnSectionsFindClick(Sender: TObject);
+begin
+  if not Assigned(FormSectionsFind) then Application.CreateForm(TFormSectionsFind, FormSectionsFind);
+  FormSectionsFind.Show;
+end;
 
 procedure TFormMain.DBEditEmployeeIDChange(Sender: TObject);
 var mapLink: String;
@@ -78,18 +105,19 @@ begin
     reloadSectionsGrid();
     if DBGridEmployeesList.FieldCount > 1 then begin
       DataModule1.FDQuerySectionName.Close;
-      DataModule1.FDQuerySectionName.SQL.Text := 'SELECT mapLink FROM Cities WHERE name = "' + DBGridEmployeesList.Columns[1].Field.Text + '"';
+      DataModule1.FDQuerySectionName.SQL.Text := 'SELECT mapLink FROM Cities WHERE name = "' + DBGridEmployeesList.Columns[2].Field.Text + '"';
       DataModule1.FDQuerySectionName.Open;
       mapLink := DataModule1.FDQuerySectionName.FieldByName('mapLink').AsString;
-      LinkLabelShowMap.Caption := '<a href="'+mapLink+'">Показать на карте</a>';
     end else begin
       DataModule1.FDQuerySectionName.Close;
       DataModule1.FDQuerySectionName.SQL.Text := 'SELECT mapLink FROM Cities WHERE CityID = "' + DBGridEmployees.Columns[4].Field.Text + '"';
       DataModule1.FDQuerySectionName.Open;
       mapLink := DataModule1.FDQuerySectionName.FieldByName('mapLink').AsString;
-      LinkLabelShowMap.Caption := '<a href="'+mapLink+'">Показать на карте</a>';
     end;
   end;
+
+  DataModule1.FDTableEmployee.RecNo := DataModule1.FDQueryEmployee.RecNo;
+  LabelMapLink.Hint := mapLink;
 end;
 
 procedure TFormMain.DBTextContactClick(Sender: TObject);
@@ -130,10 +158,19 @@ begin
   //reloadSectionsGrid();
 end;
 
-procedure TFormMain.LinkLabelShowMapLinkClick(Sender: TObject;
-  const Link: string; LinkType: TSysLinkType);
+procedure TFormMain.LabelMapLinkClick(Sender: TObject);
 begin
-  ShellExecute(Handle, 'open', PChar(Link), nil, nil, SW_NORMAL );
+  ShellExecute(Handle, 'open', PChar(LabelMapLink.Hint), nil, nil, SW_NORMAL );
+end;
+
+procedure TFormMain.LabelMapLinkMouseEnter(Sender: TObject);
+begin
+  LabelMapLink.Font.Style := LabelMapLink.Font.Style + [fsUnderline];
+end;
+
+procedure TFormMain.LabelMapLinkMouseLeave(Sender: TObject);
+begin
+  LabelMapLink.Font.Style := LabelMapLink.Font.Style - [fsUnderline];
 end;
 
 procedure TFormMain.NSearchSettingClick(Sender: TObject);
@@ -149,12 +186,13 @@ begin
   for var i := 0 to PopupMenuSearchSettings.Items.Count-1 do
     if PopupMenuSearchSettings.Items[i].Checked then searchSettings := i;
   DataModule1.recordFind(SearchBoxFindEmployee.Text, searchSettings);
-  DBGridEmployeesList.Columns[0].Width := 200;
-  DBGridEmployeesList.Columns[1].Width := 150;
+  DBGridEmployeesList.Columns[0].Visible := false;
+  DBGridEmployeesList.Columns[1].Width := 200;
   DBGridEmployeesList.Columns[2].Width := 150;
   DBGridEmployeesList.Columns[3].Width := 150;
-  DBGridEmployeesList.Columns[4].Visible := false;
+  DBGridEmployeesList.Columns[4].Width := 150;
   DBGridEmployeesList.Columns[5].Visible := false;
+  DBGridEmployeesList.Columns[6].Visible := false;
 end;
 
 procedure TFormMain.TabSheetReadShow(Sender: TObject);
@@ -170,25 +208,44 @@ begin
   id := DBGridEmployees.Columns[0].Field.Text;
   DataModule1.FDTableEmployee.Insert;
   FormAddEmployee.show;
+  FormAddEmployee.Caption := 'Добавить сотрудника';
   if id = '' then id := '1'
   else FormAddEmployee.DBEditEmpID.Text := IntToStr(StrToInt(id)+1);
+end;
+
+procedure TFormMain.ToolButtonDeleteClick(Sender: TObject);
+begin
+  if DataModule1.FDTableEmployee.RecordCount > 0 then begin
+    if Application.MessageBox(pChar('Вы хотите удалить запить?'), 'Удаление записи', MB_YESNO) = idYes then begin
+
+      DataModule1.FDQuerySectionName.SQL.Text := 'Delete From EmployeeSections'
+                                               + ' Where EmployeeID = '+DBGridEmployees.Columns[0].Field.Text;
+      try
+        DataModule1.FDQuerySectionName.ExecSQL;
+      finally
+        DataModule1.FDQuerySectionName.Close;
+      end;
+      DataModule1.FDTableEmployee.Delete;
+    end;
+  end;
 end;
 
 procedure TFormMain.reloadEmployeeGrid();
 begin
   DataModule1.FDQueryEmployee.Close;
-  DataModule1.FDQueryEmployee.SQL.Text := 'Select middleName || " " || firstName || " " || lastName ФИО, Cities.name Город, Posts.PostName Должность, Grades.GradeName Грейд, tgContact, EmployeeID'
+  DataModule1.FDQueryEmployee.SQL.Text := 'Select EmployeeID, middleName || " " || firstName || " " || lastName ФИО, Cities.name Город, Posts.PostName Должность, Grades.GradeName Грейд, tgContact, EmployeeID'
                                           +' FROM Employee e'
                                           +' JOIN Cities ON e.city = Cities.CityID'
                                           +' JOIN Posts ON e.post = Posts.PostID'
-                                          +' JOIN Grades ON e.grade = Grades.GradeID';
+                                          +' LEFT JOIN Grades ON e.grade = Grades.GradeID';
   DataModule1.FDQueryEmployee.Open;
-  DBGridEmployeesList.Columns[0].Width := 200;
-  DBGridEmployeesList.Columns[1].Width := 150;
+  DBGridEmployeesList.Columns[0].Visible := false;
+  DBGridEmployeesList.Columns[1].Width := 200;
   DBGridEmployeesList.Columns[2].Width := 150;
   DBGridEmployeesList.Columns[3].Width := 150;
-  DBGridEmployeesList.Columns[4].Visible := false;
+  DBGridEmployeesList.Columns[4].Width := 150;
   DBGridEmployeesList.Columns[5].Visible := false;
+  DBGridEmployeesList.Columns[6].Visible := false;
 end;
 
 procedure TFormMain.reloadSectionsGrid();

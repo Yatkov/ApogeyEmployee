@@ -59,14 +59,17 @@ type
   private
     { Private declarations }
     UpdatingState: Boolean;
-    procedure loadSections;
     function checkErrors():boolean;
     procedure UpdateChildrenCheckState(Node: TTreeNode; State: Integer);
     procedure UpdateParentCheckState(Node: TTreeNode);
     procedure checkedCount();
     procedure checkDublicateSection(sectionNameId: String);
+    procedure clearSections();
   public
     { Public declarations }
+    isEdit: boolean;
+    procedure loadSections;
+    procedure selectSections;
   end;
 
 var
@@ -82,7 +85,7 @@ uses DataModule;
 procedure TFormAddEmployee.FormClose(Sender: TObject; var Action: TCloseAction);
 var Node: TTreeNode;
 begin
-  if not isSave then DataModule1.FDTableEmployee.Delete;
+  if (not isSave) and (not isEdit) then DataModule1.FDTableEmployee.Delete;
   Node := TreeViewSections.Items.GetFirstNode;
   if Assigned(Node) then TreeViewSections.Free;
   Destroy;
@@ -96,11 +99,16 @@ begin
     CanClose := true;
     Exit;
   end;
+  if isEdit then begin
+    CanClose := true;
+    Exit;
+  end;
   CanClose:=MessageBox(handle,pchar('Вы хотите отменить добавление сотрудника?'),pchar('Отмена'),36)=IDYes
 end;
 
 procedure TFormAddEmployee.FormCreate(Sender: TObject);
 begin
+  isEdit := false;
   DBEditEmpID.DataField := 'EmployeeID';
   DBLabeledEditMiddleName.DataField := 'middleName';
   DBLabeledEditFirstName.DataField := 'firstName';
@@ -167,6 +175,16 @@ begin
   end;
 end;
 
+procedure TFormAddEmployee.selectSections;
+var Node: TTreeNode;
+begin
+  Node := TreeViewSections.Items.GetFirstNode;
+  while Assigned(Node) do begin
+    //showMessage(IntToStr(Integer(Node.data)));
+    Node := Node.getNext;
+  end;
+end;
+
 procedure TFormAddEmployee.BitBtnSaveClick(Sender: TObject);
 var Node: TTreeNode;
 begin
@@ -206,6 +224,17 @@ begin
     end;
   end;
   if isSave then PostMessage(Self.Handle, WM_CLOSE, 0, 0);
+end;
+
+procedure TFormAddEmployee.clearSections();
+begin
+  DataModule1.FDQuerySectionName.SQL.Text := 'Delete From EmployeeSections'
+                                           + ' Where EmployeeID = '+DBEditEmpID.Text;
+  try
+    DataModule1.FDQuerySectionName.ExecSQL;
+  finally
+    DataModule1.FDQuerySectionName.Close;
+  end;
 end;
 
 procedure TFormAddEmployee.checkDublicateSection(sectionNameId: String);
@@ -412,9 +441,11 @@ begin
     DataModule1.FDQueryGrade.SQL.Text := 'SELECT GradeID, GradeName FROM Grades WHERE PostID = ' + DBLookupComboBoxPost.Field.Text;
     try
       DataModule1.FDQueryGrade.Open;
-      LabelGrade.Enabled := True;
-      DBLookupComboBoxGrade.Enabled := True;
-      loadSections();
+      if DataModule1.FDQueryGrade.RecordCount > 0 then begin
+        LabelGrade.Enabled := True;
+        DBLookupComboBoxGrade.Enabled := True;
+        loadSections();
+      end;
     except on e:Exception do
       showMessage(e.Message);
     end;
