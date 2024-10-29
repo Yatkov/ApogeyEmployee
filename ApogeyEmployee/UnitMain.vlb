@@ -33,7 +33,7 @@ Visible=True
 Coordinates=10,78,131,58
 
 []
-Coordinates=448,261,143,36
+Coordinates=448,209,145,36
 
 [ScrollBoxEmployeeInfo]
 Coordinates=448,1,148,36
@@ -47,9 +47,6 @@ Visible=True
 
 [DBLabeledEditGrade]
 Coordinates=312,80,136,36
-
-[DBLabeledEditContact]
-Coordinates=448,209,145,36
 
 [SearchBoxFindEmployee]
 Coordinates=10,10,84,58

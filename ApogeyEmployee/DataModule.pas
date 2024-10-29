@@ -27,12 +27,14 @@ type
     FDQuerySectionName: TFDQuery;
     FDQuerySections: TFDQuery;
     DataSourceQuerySections: TDataSource;
+    FDQueryEmployeeFind: TFDQuery;
     procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }
     procedure DBConnect();
   public
     { Public declarations }
+    procedure recordFind(query: string; fieldNo: Integer);
   end;
 
 var
@@ -75,9 +77,29 @@ begin
 
     FDQuerySections.ConnectionName := FDConEmployee.ConnectionName;
     FDQuerySections.Connection := FDConEmployee;
+
+    FDQueryEmployeeFind.ConnectionName := FDConEmployee.ConnectionName;
+    FDQueryEmployeeFind.Connection := FDConEmployee;
   finally
 
   end;
+end;
+
+procedure TDataModule1.recordFind(query: string; fieldNo: Integer);
+var defaultQuery: string;
+begin
+  if Length(query) > 0 then begin
+    defaultQuery := 'Select middleName || " " || firstName || " " || lastName ФИО, Cities.name Город, Posts.PostName Должность, Grades.GradeName Грейд, tgContact, EmployeeID FROM Employee e JOIN Cities ON e.city = Cities.CityID JOIN Posts ON e.post = Posts.PostID JOIN Grades ON e.grade = Grades.GradeID';
+    DataSourceEmployeeSQL.DataSet := FDQueryEmployeeFind;
+    case fieldNo of
+      0: FDQueryEmployeeFind.SQL.Text := defaultQuery + ' Where ФИО Like "%' + query + '%"';
+      1: FDQueryEmployeeFind.SQL.Text := defaultQuery + ' Where Город Like "%' + query +'%"';
+      2: FDQueryEmployeeFind.SQL.Text := defaultQuery + ' Where Должность Like "%' + query +'%"';
+      3: FDQueryEmployeeFind.SQL.Text := defaultQuery + ' Where Грейд Like "%' + query + '%"';
+    end;
+    FDQueryEmployeeFind.Open;
+  end else DataSourceEmployeeSQL.DataSet := FDQueryEmployee;
+
 end;
 
 end.

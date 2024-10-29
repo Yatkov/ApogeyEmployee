@@ -6,7 +6,8 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Data.DB, Vcl.Grids,
   Vcl.DBGrids, Vcl.ExtCtrls, Vcl.ToolWin, Vcl.Mask, Vcl.DBCtrls, Vcl.StdCtrls,
-  Vcl.WinXCtrls, Vcl.DBCGrids, shellApi;
+  Vcl.WinXCtrls, Vcl.DBCGrids, shellApi, System.ImageList, Vcl.ImgList,
+  Vcl.Buttons, Vcl.Menus;
 
 type
   TFormMain = class(TForm)
@@ -23,21 +24,26 @@ type
     DBLabeledEditCity: TDBLabeledEdit;
     DBLabeledEditPost: TDBLabeledEdit;
     DBLabeledEditGrade: TDBLabeledEdit;
-    DBLabeledEditContact: TDBLabeledEdit;
     ScrollBoxEmployeeInfo: TScrollBox;
     Bevel1: TBevel;
     EmployeeData: TPanel;
     Bevel2: TBevel;
     Bevel3: TBevel;
     Bevel5: TBevel;
-    Bevel6: TBevel;
     DBGridSections: TDBGrid;
     DBEditEmployeeID: TDBEdit;
-    ToolBar1: TToolBar;
-    ToolButton1: TToolButton;
     DBLabeledEditName: TDBLabeledEdit;
     LinkLabelShowMap: TLinkLabel;
     PanelSections: TPanel;
+    PanelDBControl: TPanel;
+    ImageListDBControl: TImageList;
+    ButtonSearchSettings: TButton;
+    PopupMenuSearchSettings: TPopupMenu;
+    N1: TMenuItem;
+    N2: TMenuItem;
+    N3: TMenuItem;
+    N4: TMenuItem;
+    DBTextContact: TDBText;
     procedure SearchBoxFindEmployeeChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ToolButtonAddClick(Sender: TObject);
@@ -45,6 +51,10 @@ type
     procedure TabSheetReadShow(Sender: TObject);
     procedure LinkLabelShowMapLinkClick(Sender: TObject; const Link: string;
       LinkType: TSysLinkType);
+    procedure NSearchSettingClick(Sender: TObject);
+    procedure DBTextContactMouseEnter(Sender: TObject);
+    procedure DBTextContactMouseLeave(Sender: TObject);
+    procedure DBTextContactClick(Sender: TObject);
   private
     { Private declarations }
     procedure reloadEmployeeGrid();
@@ -83,6 +93,25 @@ begin
   end;
 end;
 
+procedure TFormMain.DBTextContactClick(Sender: TObject);
+var username: string;
+begin
+  username := copy(DBTextContact.Caption, 2, Length(DBTextContact.Caption));
+  ShellExecute(Handle, 'open', PChar('https://t.me/' + username), nil, nil, SW_NORMAL );
+end;
+
+procedure TFormMain.DBTextContactMouseEnter(Sender: TObject);
+begin
+  DBTextContact.Font.Style := DBTextContact.Font.Style + [fsUnderline];
+  DBTextContact.Font.Color := $00A26544;
+end;
+
+procedure TFormMain.DBTextContactMouseLeave(Sender: TObject);
+begin
+  DBTextContact.Font.Style := DBTextContact.Font.Style - [fsUnderline];
+  DBTextContact.Font.Color := clWhite;
+end;
+
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
   DataModule1.FDConEmployee.Open;
@@ -96,7 +125,7 @@ begin
   DBLabeledEditCity.DataField := 'Город';
   DBLabeledEditPost.DataField := 'Должность';
   DBLabeledEditGrade.DataField := 'Грейд';
-  DBLabeledEditContact.DataField := 'tgContact';
+  DBTextContact.DataField := 'tgContact';
   DBEditEmployeeID.DataField := 'EmployeeID';
 
   //reloadSectionsGrid();
@@ -108,9 +137,25 @@ begin
   ShellExecute(Handle, 'open', PChar(Link), nil, nil, SW_NORMAL );
 end;
 
-procedure TFormMain.SearchBoxFindEmployeeChange(Sender: TObject);
+procedure TFormMain.NSearchSettingClick(Sender: TObject);
 begin
-  //DataModule1.FDConEmployee.DriverName := 'SQLite';
+  for var i := 0 to PopupMenuSearchSettings.Items.Count-1 do
+    PopupMenuSearchSettings.Items[i].Checked := false;
+  (Sender as TMenuItem).Checked := true;
+end;
+
+procedure TFormMain.SearchBoxFindEmployeeChange(Sender: TObject);
+var searchSettings: Integer;
+begin
+  for var i := 0 to PopupMenuSearchSettings.Items.Count-1 do
+    if PopupMenuSearchSettings.Items[i].Checked then searchSettings := i;
+  DataModule1.recordFind(SearchBoxFindEmployee.Text, searchSettings);
+  DBGridEmployeesList.Columns[0].Width := 200;
+  DBGridEmployeesList.Columns[1].Width := 150;
+  DBGridEmployeesList.Columns[2].Width := 150;
+  DBGridEmployeesList.Columns[3].Width := 150;
+  DBGridEmployeesList.Columns[4].Visible := false;
+  DBGridEmployeesList.Columns[5].Visible := false;
 end;
 
 procedure TFormMain.TabSheetReadShow(Sender: TObject);

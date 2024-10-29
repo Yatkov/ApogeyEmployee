@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Mask, Vcl.ExtCtrls,
   Vcl.DBCtrls, Vcl.Buttons, System.ImageList, Vcl.ImgList, Vcl.CheckLst, System.Generics.Collections,
-  Vcl.ComCtrls;
+  Vcl.ComCtrls, System.RegularExpressions;
 
 type
   TFormAddEmployee = class(TForm)
@@ -40,6 +40,12 @@ type
     TreeViewSections: TTreeView;
     StatusBarSectionCounter: TStatusBar;
     DBEditEmpID: TDBEdit;
+    ShapeFirstName: TShape;
+    ShapeLastName: TShape;
+    ShapeContact: TShape;
+    ShapeCity: TShape;
+    ShapePost: TShape;
+    ShapeGrade: TShape;
     procedure FormCreate(Sender: TObject);
     procedure DBLookupComboBoxPostCloseUp(Sender: TObject);
     procedure BitBtnSaveClick(Sender: TObject);
@@ -118,7 +124,6 @@ end;
 
 // Кнопка отмены
 procedure TFormAddEmployee.ButtonCancelClick(Sender: TObject);
-var Node: TTreeNode;
 begin
   Close;
 end;
@@ -196,15 +201,16 @@ begin
         Node := Node.getNext;
       end;
       isSave := true;
-      Close;
     finally
       DataModule1.FDQuerySectionName.Close;
     end;
   end;
+  if isSave then PostMessage(Self.Handle, WM_CLOSE, 0, 0);
 end;
 
 procedure TFormAddEmployee.checkDublicateSection(sectionNameId: String);
 begin
+  DataModule1.FDQuerySectionName.Close;
   DataModule1.FDQuerySectionName.SQL.Text := 'Select EmployeeID, SectionNameID, SectionID'
                                            + ' From EmployeeSections'
                                            + ' WHERE EmployeeID = '+DBEditEmpID.Text+' AND SectionNameID = '+sectionNameId+' AND SectionID IS NULL';
@@ -213,7 +219,7 @@ begin
     if DataModule1.FDQuerySectionName.RecordCount > 0 then begin
       DataModule1.FDQuerySectionName.Close;
       DataModule1.FDQuerySectionName.SQL.Text := 'Delete From EmployeeSections'
-                                               + ' WHERE EmployeeID = 1 AND SectionNameID = 4 AND SectionID IS NULL';
+                                               + ' WHERE EmployeeID = '+DBEditEmpID.Text+' AND SectionNameID = '+sectionNameId+' AND SectionID IS NULL';
       DataModule1.FDQuerySectionName.ExecSQL;
     end;
   finally
@@ -224,26 +230,85 @@ end;
 
 // Проверка на корректность заполнения
 function TFormAddEmployee.checkErrors():boolean;
-var error1, error2, error3, error4: boolean;
+var errorMiddleName, errorFirstName, errorLastName, errorTGContact, errorCity, errorPost, errorGrade: boolean;
 begin
-  error1 := DBLabeledEditMiddleName.Text = '';
-  error2 := DBLabeledEditFirstName.Text = '';
-  error3 := DBLabeledEditLastName.Text = '';
+  errorMiddleName := DBLabeledEditMiddleName.Text = '';
+  errorFirstName := DBLabeledEditFirstName.Text = '';
+  errorLastName := DBLabeledEditLastName.Text = '';
+  errorTGContact := not(TRegEx.IsMatch(DBLabeledEditContact.Text, '^@[a-zA-Z0-9_]+$'));
+  errorCity := DBLookupComboBoxCity.Text = '';
+  errorPost := DBLookupComboBoxPost.Text = '';
+  errorGrade := DBLookupComboBoxGrade.Text = '';
 
-  if error1 then shapeMiddleName.Pen.Color := clred;
-
-  if error1 or error2 or error3 then begin
-    LabelMsg.Caption := 'Заполните все необходимые поля!';
+  if errorMiddleName then begin
+    shapeMiddleName.Pen.Color := clred;
+    LabelMsg.Caption := 'Заполните фамилию!';
+    checkErrors := false;
     TimerMsg.Enabled := true;
+    Exit;
   end;
 
-  checkErrors := not error1 and not error2 and not error3;
+  if errorFirstName then begin
+    shapeFirstName.Pen.Color := clred;
+    LabelMsg.Caption := 'Заполните имя!';
+    checkErrors := false;
+    TimerMsg.Enabled := true;
+    Exit;
+  end;
+
+  if errorLastName then begin
+    shapeLastName.Pen.Color := clred;
+    LabelMsg.Caption := 'Заполните отчество!';
+    checkErrors := false;
+    TimerMsg.Enabled := true;
+    Exit;
+  end;
+
+  if errorTGContact then begin
+    shapeContact.Pen.Color := clred;
+    LabelMsg.Caption := 'Заполните контакт телеграмм в формате @username!';
+    checkErrors := false;
+    TimerMsg.Enabled := true;
+    Exit;
+  end;
+
+  if errorCity then begin
+    shapeCity.Pen.Color := clred;
+    LabelMsg.Caption := 'Заполните город!';
+    checkErrors := false;
+    TimerMsg.Enabled := true;
+    Exit;
+  end;
+
+  if errorPost then begin
+    shapePost.Pen.Color := clred;
+    LabelMsg.Caption := 'Заполните должность!';
+    checkErrors := false;
+    TimerMsg.Enabled := true;
+    Exit;
+  end;
+
+  {if errorGrade then begin
+    shapeGrade.Pen.Color := clred;
+    LabelMsg.Caption := 'Заполните грейд!';
+    checkErrors := false;
+    TimerMsg.Enabled := true;
+    Exit;
+  end;  }
+
+  checkErrors := true;
 end;
 
 // Завершение работы таймера ошибок
 procedure TFormAddEmployee.TimerMsgTimer(Sender: TObject);
 begin
   shapeMiddleName.Pen.Color := $00383226;
+  shapeFirstName.Pen.Color := $00383226;
+  shapeLastName.Pen.Color := $00383226;
+  shapeContact.Pen.Color := $00383226;
+  shapeCity.Pen.Color := $00383226;
+  shapePost.Pen.Color := $00383226;
+  shapeGrade.Pen.Color := $00383226;
   LabelMsg.Caption := '';
   TimerMsg.Enabled := false;
 end;

@@ -74,4 +74,9 @@ object DataModule1: TDataModule1
     Left = 168
     Top = 472
   end
+  object FDQueryEmployeeFind: TFDQuery
+    Connection = FDConEmployee
+    Left = 560
+    Top = 80
+  end
 end

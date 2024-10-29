@@ -4,7 +4,7 @@ object FormAddEmployee: TFormAddEmployee
   BorderStyle = bsToolWindow
   Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1089#1086#1090#1088#1091#1076#1085#1080#1082#1072
   ClientHeight = 309
-  ClientWidth = 685
+  ClientWidth = 674
   Color = clBtnFace
   DefaultMonitor = dmMainForm
   Font.Charset = DEFAULT_CHARSET
@@ -20,7 +20,7 @@ object FormAddEmployee: TFormAddEmployee
   object PanelEdits: TPanel
     Left = 0
     Top = 0
-    Width = 344
+    Width = 333
     Height = 268
     Align = alClient
     Padding.Left = 80
@@ -29,7 +29,7 @@ object FormAddEmployee: TFormAddEmployee
     Padding.Bottom = 10
     TabOrder = 0
     DesignSize = (
-      344
+      333
       268)
     object LabelGrade: TLabel
       Left = 38
@@ -42,7 +42,7 @@ object FormAddEmployee: TFormAddEmployee
     object Bevel5: TBevel
       Left = 81
       Top = 174
-      Width = 247
+      Width = 236
       Height = 12
       Align = alTop
       Shape = bsSpacer
@@ -52,7 +52,7 @@ object FormAddEmployee: TFormAddEmployee
     object LabelPost: TLabel
       Left = 8
       Top = 188
-      Width = 62
+      Width = 64
       Height = 15
       Caption = #1044#1086#1083#1078#1085#1086#1089#1090#1100
       FocusControl = DBLookupComboBoxPost
@@ -60,7 +60,7 @@ object FormAddEmployee: TFormAddEmployee
     object Bevel4: TBevel
       Left = 81
       Top = 139
-      Width = 247
+      Width = 236
       Height = 12
       Align = alTop
       Shape = bsSpacer
@@ -78,7 +78,7 @@ object FormAddEmployee: TFormAddEmployee
     object Bevel1: TBevel
       Left = 81
       Top = 34
-      Width = 247
+      Width = 236
       Height = 12
       Align = alTop
       Shape = bsSpacer
@@ -88,7 +88,7 @@ object FormAddEmployee: TFormAddEmployee
     object Bevel2: TBevel
       Left = 81
       Top = 69
-      Width = 247
+      Width = 236
       Height = 12
       Align = alTop
       Shape = bsSpacer
@@ -98,7 +98,7 @@ object FormAddEmployee: TFormAddEmployee
     object Bevel3: TBevel
       Left = 81
       Top = 104
-      Width = 247
+      Width = 236
       Height = 12
       Align = alTop
       Shape = bsSpacer
@@ -107,7 +107,7 @@ object FormAddEmployee: TFormAddEmployee
     object Bevel7: TBevel
       Left = 81
       Top = 209
-      Width = 247
+      Width = 236
       Height = 12
       Align = alTop
       Shape = bsSpacer
@@ -117,21 +117,88 @@ object FormAddEmployee: TFormAddEmployee
     object ShapeMiddleName: TShape
       Left = 79
       Top = 9
-      Width = 251
+      Width = 240
       Height = 27
       Anchors = [akLeft, akTop, akRight, akBottom]
       Brush.Style = bsClear
       Pen.Color = 3682854
       Pen.Width = 2
+      ExplicitWidth = 251
+    end
+    object ShapeFirstName: TShape
+      Left = 79
+      Top = 44
+      Width = 240
+      Height = 27
+      Anchors = [akLeft, akTop, akRight, akBottom]
+      Brush.Style = bsClear
+      Pen.Color = 3682854
+      Pen.Width = 2
+      ExplicitWidth = 251
+    end
+    object ShapeLastName: TShape
+      Left = 79
+      Top = 79
+      Width = 240
+      Height = 27
+      Anchors = [akLeft, akTop, akRight, akBottom]
+      Brush.Style = bsClear
+      Pen.Color = 3682854
+      Pen.Width = 2
+      ExplicitWidth = 251
+    end
+    object ShapeContact: TShape
+      Left = 79
+      Top = 114
+      Width = 240
+      Height = 27
+      Anchors = [akLeft, akTop, akRight, akBottom]
+      Brush.Style = bsClear
+      Pen.Color = 3682854
+      Pen.Width = 2
+      ExplicitWidth = 251
+    end
+    object ShapeCity: TShape
+      Left = 79
+      Top = 149
+      Width = 240
+      Height = 27
+      Anchors = [akLeft, akTop, akRight, akBottom]
+      Brush.Style = bsClear
+      Pen.Color = 3682854
+      Pen.Width = 2
+      ExplicitWidth = 251
+    end
+    object ShapePost: TShape
+      Left = 79
+      Top = 184
+      Width = 240
+      Height = 27
+      Anchors = [akLeft, akTop, akRight, akBottom]
+      Brush.Style = bsClear
+      Pen.Color = 3682854
+      Pen.Width = 2
+      ExplicitWidth = 251
+    end
+    object ShapeGrade: TShape
+      Left = 79
+      Top = 219
+      Width = 240
+      Height = 27
+      Anchors = [akLeft, akTop, akRight, akBottom]
+      Brush.Style = bsClear
+      Pen.Color = 3682854
+      Pen.Width = 2
+      ExplicitWidth = 251
     end
     object DBLookupComboBoxGrade: TDBLookupComboBox
       Left = 81
       Top = 221
-      Width = 247
+      Width = 236
       Height = 23
       Align = alTop
       DataSource = DataModule1.DataSourceEmployee
-      DropDownRows = 9
+      DropDownRows = 11
       Enabled = False
       ListSource = DataModule1.DataSourceGrade
       TabOrder = 0
@@ -139,7 +206,7 @@ object FormAddEmployee: TFormAddEmployee
     object DBLookupComboBoxPost: TDBLookupComboBox
       Left = 81
       Top = 186
-      Width = 247
+      Width = 236
       Height = 23
       Align = alTop
       DataSource = DataModule1.DataSourceEmployee
@@ -151,7 +218,7 @@ object FormAddEmployee: TFormAddEmployee
     object DBLookupComboBoxCity: TDBLookupComboBox
       Left = 81
       Top = 151
-      Width = 247
+      Width = 236
       Height = 23
       Align = alTop
       DataSource = DataModule1.DataSourceEmployee
@@ -162,7 +229,7 @@ object FormAddEmployee: TFormAddEmployee
     object DBLabeledEditMiddleName: TDBLabeledEdit
       Left = 81
       Top = 11
-      Width = 247
+      Width = 236
       Height = 23
       Align = alTop
       DataSource = DataModule1.DataSourceEmployee
@@ -176,7 +243,7 @@ object FormAddEmployee: TFormAddEmployee
     object DBLabeledEditFirstName: TDBLabeledEdit
       Left = 81
       Top = 46
-      Width = 247
+      Width = 236
       Height = 23
       Align = alTop
       DataSource = DataModule1.DataSourceEmployee
@@ -190,12 +257,12 @@ object FormAddEmployee: TFormAddEmployee
     object DBLabeledEditLastName: TDBLabeledEdit
       Left = 81
       Top = 81
-      Width = 247
+      Width = 236
       Height = 23
       Align = alTop
       DataSource = DataModule1.DataSourceEmployee
       TabOrder = 5
-      EditLabel.Width = 51
+      EditLabel.Width = 52
       EditLabel.Height = 23
       EditLabel.Caption = #1054#1090#1095#1077#1089#1090#1074#1086
       LabelPosition = lpLeft
@@ -204,12 +271,15 @@ object FormAddEmployee: TFormAddEmployee
     object DBLabeledEditContact: TDBLabeledEdit
       Left = 81
       Top = 116
-      Width = 247
+      Width = 236
       Height = 23
+      Hint = #1060#1086#1088#1084#1072#1090': @username'
       Align = alTop
       DataSource = DataModule1.DataSourceEmployee
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 6
-      EditLabel.Width = 57
+      EditLabel.Width = 58
       EditLabel.Height = 23
       EditLabel.Caption = #1058#1043' '#1082#1086#1085#1090#1072#1082#1090
       LabelPosition = lpLeft
@@ -223,12 +293,13 @@ object FormAddEmployee: TFormAddEmployee
       DataSource = DataModule1.DataSourceEmployee
       ReadOnly = True
       TabOrder = 7
+      Visible = False
     end
   end
   object PanelConrol: TPanel
     Left = 0
     Top = 268
-    Width = 685
+    Width = 674
     Height = 41
     Align = alBottom
     Padding.Left = 5
@@ -237,7 +308,7 @@ object FormAddEmployee: TFormAddEmployee
     Padding.Bottom = 5
     TabOrder = 1
     object Bevel10: TBevel
-      Left = 541
+      Left = 530
       Top = 6
       Width = 10
       Height = 29
@@ -246,7 +317,7 @@ object FormAddEmployee: TFormAddEmployee
       ExplicitLeft = 704
     end
     object Bevel11: TBevel
-      Left = 534
+      Left = 523
       Top = 6
       Width = 7
       Height = 29
@@ -257,7 +328,7 @@ object FormAddEmployee: TFormAddEmployee
     object LabelMsg: TLabel
       Left = 6
       Top = 6
-      Width = 391
+      Width = 380
       Height = 29
       Align = alLeft
       Anchors = [akLeft, akTop, akRight, akBottom]
@@ -266,7 +337,7 @@ object FormAddEmployee: TFormAddEmployee
       ExplicitWidth = 554
     end
     object BitBtnSave: TBitBtn
-      Left = 411
+      Left = 400
       Top = 6
       Width = 123
       Height = 29
@@ -278,7 +349,7 @@ object FormAddEmployee: TFormAddEmployee
       OnClick = BitBtnSaveClick
     end
     object ButtonCancel: TButton
-      Left = 551
+      Left = 540
       Top = 6
       Width = 123
       Height = 29
@@ -289,7 +360,7 @@ object FormAddEmployee: TFormAddEmployee
     end
   end
   object PanelAddSections: TPanel
-    Left = 344
+    Left = 333
     Top = 0
     Width = 341
     Height = 268
@@ -321,8 +392,8 @@ object FormAddEmployee: TFormAddEmployee
     end
   end
   object ImageList1: TImageList
-    Left = 776
-    Top = 48
+    Left = 360
+    Top = 16
     Bitmap = {
       494C010101000800040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
@@ -467,7 +538,7 @@ object FormAddEmployee: TFormAddEmployee
     Enabled = False
     Interval = 2000
     OnTimer = TimerMsgTimer
-    Left = 776
-    Top = 120
+    Left = 424
+    Top = 16
   end
 end
