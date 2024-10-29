@@ -36,7 +36,6 @@ type
     LinkLabelShowMap: TLinkLabel;
     PanelSections: TPanel;
     PanelDBControl: TPanel;
-    ImageListDBControl: TImageList;
     ButtonSearchSettings: TButton;
     PopupMenuSearchSettings: TPopupMenu;
     N1: TMenuItem;
