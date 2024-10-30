@@ -61,7 +61,7 @@ object DataModule1: TDataModule1
   end
   object FDQuerySectionName: TFDQuery
     Connection = FDConEmployee
-    Left = 40
+    Left = 56
     Top = 400
   end
   object FDQuerySections: TFDQuery
@@ -76,7 +76,17 @@ object DataModule1: TDataModule1
   end
   object FDQueryEmployeeFind: TFDQuery
     Connection = FDConEmployee
-    Left = 560
+    Left = 584
     Top = 80
+  end
+  object DataSourceSectionFind: TDataSource
+    DataSet = FDQuerySectionFind
+    Left = 584
+    Top = 184
+  end
+  object FDQuerySectionFind: TFDQuery
+    Connection = FDConEmployee
+    Left = 440
+    Top = 184
   end
 end

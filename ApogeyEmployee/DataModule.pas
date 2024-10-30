@@ -28,6 +28,8 @@ type
     FDQuerySections: TFDQuery;
     DataSourceQuerySections: TDataSource;
     FDQueryEmployeeFind: TFDQuery;
+    DataSourceSectionFind: TDataSource;
+    FDQuerySectionFind: TFDQuery;
     procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }

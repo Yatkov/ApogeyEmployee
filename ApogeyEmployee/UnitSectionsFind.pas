@@ -14,11 +14,20 @@ type
     PanelSections: TPanel;
     PanelPostSelect: TPanel;
     LabelPostSelect: TLabel;
-    DBComboBoxPosts: TDBComboBox;
+    ComboBoxPost: TComboBox;
+    PanelGridEmployee: TPanel;
+    PanelGridSettings: TPanel;
+    CheckBoxShowSubSection: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure ComboBoxPostChange(Sender: TObject);
+    procedure RadioGroupSectionsClick(Sender: TObject);
+    procedure CheckBoxShowSubSectionClick(Sender: TObject);
   private
     { Private declarations }
+    procedure loadGrid();
+    procedure fillPosts();
+    procedure fillSections();
   public
     { Public declarations }
   end;
@@ -41,15 +50,101 @@ end;
 
 procedure TFormSectionsFind.FormCreate(Sender: TObject);
 begin
-  DBGridEmployees.Columns[0].Visible := false;
-  DBGridEmployees.Columns[1].Width := 250;
-  DBGridEmployees.Columns[2].Visible := false;
-  DBGridEmployees.Columns[3].Visible := false;
-  DBGridEmployees.Columns[4].Visible := false;
-  DBGridEmployees.Columns[5].Visible := false;
-  DBGridEmployees.Columns[6].Visible := false;
+  loadGrid();
 
-  DBComboBoxPosts.DataField := 'PostName';
+  fillPosts;
+  fillSections();
+end;
+
+procedure TFormSectionsFind.RadioGroupSectionsClick(Sender: TObject);
+begin
+  if RadioGroupSections.ItemIndex > -1 then begin
+    DataModule1.FDQuerySectionName.Close;
+    DataModule1.FDQuerySectionFind.SQL.Text := 'Select DISTINCT middleName || " " || firstName || " " || lastName ФИО, s.FullName Подраздел'
+                                             + ' FROM Employee e'
+                                             + ' JOIN EmployeeSections es ON e.EmployeeID = es.EmployeeID'
+                                             + ' JOIN SectionName sn ON es.SectionNameID = sn.SectionNameID'
+                                             + ' LEFT JOIN Sections s ON es.SectionID = s.SectionID'
+                                             + ' WHERE sn.Name LIKE "' + RadioGroupSections.Items[RadioGroupSections.ItemIndex] + '"';
+    DataModule1.FDQuerySectionFind.Open;
+    DBGridEmployees.DataSource := DataModule1.DataSourceSectionFind;
+    DBGridEmployees.Columns[0].Width := 200;
+    DBGridEmployees.Columns[1].Width := 255;
+  end else begin
+    loadGrid();
+  end;
+end;
+
+procedure TFormSectionsFind.CheckBoxShowSubSectionClick(Sender: TObject);
+begin
+  DataModule1.FDQuerySectionFind.Close;
+  if CheckBoxShowSubSection.Checked then begin
+    for var i := 0 to RadioGroupSections.Items.Count-1 do begin
+      if RadioGroupSections.ItemIndex = i then begin
+        DataModule1.FDQuerySectionFind.SQL.Text := 'Select DISTINCT middleName || " " || firstName || " " || lastName ФИО'
+                                                  + ' FROM Employee e'
+                                             + ' JOIN EmployeeSections es ON e.EmployeeID = es.EmployeeID';
+      end else begin
+        DataModule1.FDQuerySectionFind.SQL.Text := 'Select DISTINCT middleName || " " || firstName || " " || lastName ФИО, s.FullName Подраздел'
+                                                 + ' FROM Employee e'
+                                                 + ' JOIN EmployeeSections es ON e.EmployeeID = es.EmployeeID'
+                                               + ' JOIN SectionName sn ON es.SectionNameID = sn.SectionNameID'
+                                             + ' LEFT JOIN Sections s ON es.SectionID = s.SectionID';
+      end;
+
+    end;
+
+  end;
+end;
+
+procedure TFormSectionsFind.ComboBoxPostChange(Sender: TObject);
+begin
+  fillSections();
+  RadioGroupSectionsClick(self);
+end;
+
+procedure TFormSectionsFind.loadGrid();
+begin
+  DataModule1.FDQuerySectionFind.Close;
+  DataModule1.FDQuerySectionFind.SQL.Text := 'Select DISTINCT middleName || " " || firstName || " " || lastName ФИО, s.FullName Подраздел'
+                                             + ' FROM Employee e'
+                                             + ' JOIN EmployeeSections es ON e.EmployeeID = es.EmployeeID'
+                                             + ' JOIN SectionName sn ON es.SectionNameID = sn.SectionNameID'
+                                             + ' LEFT JOIN Sections s ON es.SectionID = s.SectionID';
+  try
+    DataModule1.FDQuerySectionFind.Open;
+    DBGridEmployees.Columns[0].Width := 200;
+    DBGridEmployees.Columns[1].Width := 255;
+  finally
+
+  end;
+end;
+
+procedure TFormSectionsFind.fillPosts();
+begin
+   ComboBoxPost.Clear;
+   DataModule1.FDTablePost.First;
+   for var i := 0 to DataModule1.FDTablePost.RecordCount-1 do begin
+    ComboBoxPost.Items.Add(DataModule1.FDTablePost.Fields[1].AsString);
+    DataModule1.FDTablePost.Next;
+  end;
+  ComboBoxPost.ItemIndex := 0;
+end;
+
+procedure TFormSectionsFind.fillSections();
+begin
+  RadioGroupSections.Items.Clear;
+  DataModule1.FDQuerySectionName.SQL.Text := 'SELECT Name FROM SectionName WHERE PostID = ' + IntToStr(ComboBoxPost.ItemIndex+1);
+  DataModule1.FDQuerySectionName.Open;
+  try
+    for var i := 0 to DataModule1.FDQuerySectionName.RecordCount-1 do begin
+      RadioGroupSections.Items.Add(DataModule1.FDQuerySectionName.FieldByName('Name').AsString);
+      DataModule1.FDQuerySectionName.Next;
+    end;
+  finally
+    DataModule1.FDQuerySectionName.Close;
+  end;
+
 end;
 
 end.
