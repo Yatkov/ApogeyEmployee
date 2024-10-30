@@ -39,7 +39,7 @@ object FormMain: TFormMain
           Left = 1
           Top = 33
           Width = 679
-          Height = 612
+          Height = 593
           Align = alClient
           Color = 5195575
           DataSource = DataModule1.DataSourceEmployeeSQL
@@ -109,6 +109,19 @@ object FormMain: TFormMain
             TabOrder = 2
             OnClick = BitBtnSectionsFindClick
           end
+        end
+        object StatusBarEmployeeCount: TStatusBar
+          Left = 1
+          Top = 626
+          Width = 679
+          Height = 19
+          Panels = <
+            item
+              Width = 50
+            end>
+          ExplicitLeft = 64
+          ExplicitTop = 216
+          ExplicitWidth = 0
         end
       end
       object ScrollBoxEmployeeInfo: TScrollBox

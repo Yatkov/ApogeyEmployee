@@ -18,11 +18,14 @@ type
     PanelGridEmployee: TPanel;
     PanelGridSettings: TPanel;
     CheckBoxShowSubSection: TCheckBox;
+    PanelSectionControl: TPanel;
+    ButtonSectionsReset: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ComboBoxPostChange(Sender: TObject);
     procedure RadioGroupSectionsClick(Sender: TObject);
     procedure CheckBoxShowSubSectionClick(Sender: TObject);
+    procedure ButtonSectionsResetClick(Sender: TObject);
   private
     { Private declarations }
     procedure loadGrid();
@@ -75,26 +78,44 @@ begin
   end;
 end;
 
+procedure TFormSectionsFind.ButtonSectionsResetClick(Sender: TObject);
+begin
+  RadioGroupSections.ItemIndex := -1;
+  RadioGroupSectionsClick(self);
+end;
+
 procedure TFormSectionsFind.CheckBoxShowSubSectionClick(Sender: TObject);
+var isSelected: boolean;
 begin
   DataModule1.FDQuerySectionFind.Close;
-  if CheckBoxShowSubSection.Checked then begin
-    for var i := 0 to RadioGroupSections.Items.Count-1 do begin
-      if RadioGroupSections.ItemIndex = i then begin
-        DataModule1.FDQuerySectionFind.SQL.Text := 'Select DISTINCT middleName || " " || firstName || " " || lastName ÔÈÎ'
-                                                  + ' FROM Employee e'
-                                             + ' JOIN EmployeeSections es ON e.EmployeeID = es.EmployeeID';
-      end else begin
-        DataModule1.FDQuerySectionFind.SQL.Text := 'Select DISTINCT middleName || " " || firstName || " " || lastName ÔÈÎ, s.FullName Ïîäðàçäåë'
-                                                 + ' FROM Employee e'
-                                                 + ' JOIN EmployeeSections es ON e.EmployeeID = es.EmployeeID'
+  isSelected := false;
+  //if CheckBoxShowSubSection.Checked then begin
+  if RadioGroupSections.ItemIndex > -1 then isSelected := true;
+
+    if not CheckBoxShowSubSection.Checked and not isSelected then begin
+      DataModule1.FDQuerySectionFind.SQL.Text := 'Select DISTINCT middleName || " " || firstName || " " || lastName ÔÈÎ'
+                                               + ' FROM Employee e'
+                                               + ' JOIN EmployeeSections es ON e.EmployeeID = es.EmployeeID'
+                                               + ' JOIN SectionName sn ON es.SectionNameID = sn.SectionNameID';
+    end else if not CheckBoxShowSubSection.Checked and isSelected then begin
+      DataModule1.FDQuerySectionFind.SQL.Text := 'Select DISTINCT middleName || " " || firstName || " " || lastName ÔÈÎ'
+                                               + ' FROM Employee e'
+                                               + ' JOIN EmployeeSections es ON e.EmployeeID = es.EmployeeID'
                                                + ' JOIN SectionName sn ON es.SectionNameID = sn.SectionNameID'
-                                             + ' LEFT JOIN Sections s ON es.SectionID = s.SectionID';
-      end;
-
+                                               + ' WHERE sn.Name LIKE "' + RadioGroupSections.Items[RadioGroupSections.ItemIndex] + '"';
+    end else if CheckBoxShowSubSection.Checked and not isSelected then begin
+      DataModule1.FDQuerySectionFind.SQL.Text := 'Select DISTINCT middleName || " " || firstName || " " || lastName ÔÈÎ, s.FullName Ïîäðàçäåë'
+                                               + ' FROM Employee e'
+                                               + ' JOIN EmployeeSections es ON e.EmployeeID = es.EmployeeID'
+                                               + ' JOIN SectionName sn ON es.SectionNameID = sn.SectionNameID'
+                                               + ' LEFT JOIN Sections s ON es.SectionID = s.SectionID';
+    end else if CheckBoxShowSubSection.Checked and isSelected then begin
+      RadioGroupSectionsClick(self);
     end;
-
-  end;
+    DataModule1.FDQuerySectionFind.Open;
+    DBGridEmployees.Columns[0].Width := 200;
+    if DBGridEmployees.FieldCount > 1 then DBGridEmployees.Columns[1].Width := 255;
+  //end;
 end;
 
 procedure TFormSectionsFind.ComboBoxPostChange(Sender: TObject);

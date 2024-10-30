@@ -48,6 +48,7 @@ type
     LabelMapLink: TLabel;
     BitBtnSectionsFind: TBitBtn;
     Bevel4: TBevel;
+    StatusBarEmployeeCount: TStatusBar;
     procedure SearchBoxFindEmployeeChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ToolButtonAddClick(Sender: TObject);
@@ -80,6 +81,27 @@ implementation
 
 uses DataModule, UnitAddEmployee, UnitSectionsFind;
 
+// При созданни
+procedure TFormMain.FormCreate(Sender: TObject);
+begin
+  DataModule1.FDConEmployee.Open;
+  DataModule1.FDTableEmployee.Open;
+  DataModule1.FDTableCity.Open;
+  DataModule1.FDTablePost.Open;
+
+  //reloadEmployeeGrid();
+
+  DBLabeledEditName.DataField := 'ФИО';
+  DBLabeledEditCity.DataField := 'Город';
+  DBLabeledEditPost.DataField := 'Должность';
+  DBLabeledEditGrade.DataField := 'Грейд';
+  DBTextContact.DataField := 'tgContact';
+  DBEditEmployeeID.DataField := 'EmployeeID';
+
+  //reloadSectionsGrid();
+end;
+
+// кнопка Редактировать
 procedure TFormMain.BitBtnEmployeeEditClick(Sender: TObject);
 begin
   if not Assigned(FormAddEmployee) then Application.CreateForm(TFormAddEmployee, FormAddEmployee);
@@ -92,12 +114,14 @@ begin
   FormAddEmployee.DBLookupComboBoxPostCloseUp(Self);
 end;
 
+// кнопка Поиск по разделам
 procedure TFormMain.BitBtnSectionsFindClick(Sender: TObject);
 begin
   if not Assigned(FormSectionsFind) then Application.CreateForm(TFormSectionsFind, FormSectionsFind);
   FormSectionsFind.Show;
 end;
 
+// Смена записи
 procedure TFormMain.DBEditEmployeeIDChange(Sender: TObject);
 var mapLink: String;
 begin
@@ -120,6 +144,7 @@ begin
   LabelMapLink.Hint := mapLink;
 end;
 
+// Открытие тг контакта
 procedure TFormMain.DBTextContactClick(Sender: TObject);
 var username: string;
 begin
@@ -139,25 +164,7 @@ begin
   DBTextContact.Font.Color := clWhite;
 end;
 
-procedure TFormMain.FormCreate(Sender: TObject);
-begin
-  DataModule1.FDConEmployee.Open;
-  DataModule1.FDTableEmployee.Open;
-  DataModule1.FDTableCity.Open;
-  DataModule1.FDTablePost.Open;
-
-  //reloadEmployeeGrid();
-
-  DBLabeledEditName.DataField := 'ФИО';
-  DBLabeledEditCity.DataField := 'Город';
-  DBLabeledEditPost.DataField := 'Должность';
-  DBLabeledEditGrade.DataField := 'Грейд';
-  DBTextContact.DataField := 'tgContact';
-  DBEditEmployeeID.DataField := 'EmployeeID';
-
-  //reloadSectionsGrid();
-end;
-
+// Открытие ссылки на карте
 procedure TFormMain.LabelMapLinkClick(Sender: TObject);
 begin
   ShellExecute(Handle, 'open', PChar(LabelMapLink.Hint), nil, nil, SW_NORMAL );
@@ -173,6 +180,7 @@ begin
   LabelMapLink.Font.Style := LabelMapLink.Font.Style - [fsUnderline];
 end;
 
+// Выбор поля для поиска
 procedure TFormMain.NSearchSettingClick(Sender: TObject);
 begin
   for var i := 0 to PopupMenuSearchSettings.Items.Count-1 do
@@ -180,6 +188,7 @@ begin
   (Sender as TMenuItem).Checked := true;
 end;
 
+// Поиск
 procedure TFormMain.SearchBoxFindEmployeeChange(Sender: TObject);
 var searchSettings: Integer;
 begin
@@ -198,6 +207,7 @@ end;
 procedure TFormMain.TabSheetReadShow(Sender: TObject);
 begin
   reloadEmployeeGrid;
+  StatusBarEmployeeCount.Panels[0].Text := 'Сотрудников в базе: ' + IntToStr(DataModule1.FDQueryEmployee.RecordCount);
 end;
 
 procedure TFormMain.ToolButtonAddClick(Sender: TObject);

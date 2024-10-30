@@ -21,19 +21,16 @@ object FormSectionsFind: TFormSectionsFind
     Height = 456
     Align = alClient
     TabOrder = 0
-    ExplicitLeft = 313
-    ExplicitWidth = 360
     object RadioGroupSections: TRadioGroup
       Left = 1
       Top = 25
       Width = 333
-      Height = 430
+      Height = 407
       Align = alClient
       Caption = #1056#1072#1079#1076#1077#1083#1099
       TabOrder = 0
       OnClick = RadioGroupSectionsClick
-      ExplicitLeft = 136
-      ExplicitWidth = 534
+      ExplicitHeight = 430
     end
     object PanelPostSelect: TPanel
       Left = 1
@@ -44,7 +41,6 @@ object FormSectionsFind: TFormSectionsFind
       Padding.Left = 5
       Padding.Right = 5
       TabOrder = 1
-      ExplicitWidth = 358
       object LabelPostSelect: TLabel
         Left = 6
         Top = 1
@@ -65,7 +61,24 @@ object FormSectionsFind: TFormSectionsFind
         Style = csDropDownList
         TabOrder = 0
         OnChange = ComboBoxPostChange
-        ExplicitWidth = 250
+      end
+    end
+    object PanelSectionControl: TPanel
+      Left = 1
+      Top = 432
+      Width = 333
+      Height = 23
+      Align = alBottom
+      TabOrder = 2
+      object ButtonSectionsReset: TButton
+        Left = 1
+        Top = 1
+        Width = 88
+        Height = 21
+        Align = alLeft
+        Caption = #1057#1073#1088#1086#1089#1080#1090#1100
+        TabOrder = 0
+        OnClick = ButtonSectionsResetClick
       end
     end
   end
