@@ -49,6 +49,8 @@ type
     BitBtnSectionsFind: TBitBtn;
     Bevel4: TBevel;
     StatusBarEmployeeCount: TStatusBar;
+    DBLabeledEditEmploymentDate: TDBLabeledEdit;
+    Bevel6: TBevel;
     procedure SearchBoxFindEmployeeChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ToolButtonAddClick(Sender: TObject);
@@ -97,6 +99,7 @@ begin
   DBLabeledEditGrade.DataField := 'Грейд';
   DBTextContact.DataField := 'tgContact';
   DBEditEmployeeID.DataField := 'EmployeeID';
+  DBLabeledEditEmploymentDate.DataField := 'employmentDate';
 
   //reloadSectionsGrid();
 end;
@@ -110,8 +113,8 @@ begin
   FormAddEmployee.show;
   FormAddEmployee.Caption := 'Редактировать сотрудника';
   FormAddEmployee.loadSections;
-  FormAddEmployee.selectSections;
   FormAddEmployee.DBLookupComboBoxPostCloseUp(Self);
+  FormAddEmployee.selectSections;
 end;
 
 // кнопка Поиск по разделам
@@ -243,7 +246,7 @@ end;
 procedure TFormMain.reloadEmployeeGrid();
 begin
   DataModule1.FDQueryEmployee.Close;
-  DataModule1.FDQueryEmployee.SQL.Text := 'Select EmployeeID, middleName || " " || firstName || " " || lastName ФИО, Cities.name Город, Posts.PostName Должность, Grades.GradeName Грейд, tgContact, EmployeeID'
+  DataModule1.FDQueryEmployee.SQL.Text := 'Select EmployeeID, middleName || " " || firstName || " " || lastName ФИО, Cities.name Город, Posts.PostName Должность, Grades.GradeName Грейд, tgContact, EmployeeID, employmentDate'
                                           +' FROM Employee e'
                                           +' JOIN Cities ON e.city = Cities.CityID'
                                           +' JOIN Posts ON e.post = Posts.PostID'
@@ -256,6 +259,7 @@ begin
   DBGridEmployeesList.Columns[4].Width := 150;
   DBGridEmployeesList.Columns[5].Visible := false;
   DBGridEmployeesList.Columns[6].Visible := false;
+  DBGridEmployeesList.Columns[7].Visible := false;
 end;
 
 procedure TFormMain.reloadSectionsGrid();

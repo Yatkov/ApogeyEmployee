@@ -119,9 +119,6 @@ object FormMain: TFormMain
             item
               Width = 50
             end>
-          ExplicitLeft = 64
-          ExplicitTop = 216
-          ExplicitWidth = 0
         end
       end
       object ScrollBoxEmployeeInfo: TScrollBox
@@ -167,12 +164,14 @@ object FormMain: TFormMain
           Height = 515
           Align = alClient
           BevelOuter = bvNone
-          Padding.Left = 100
+          Padding.Left = 135
           TabOrder = 0
+          ExplicitLeft = -19
+          ExplicitTop = -14
           object Bevel2: TBevel
-            Left = 100
+            Left = 135
             Top = 38
-            Width = 294
+            Width = 259
             Height = 18
             Align = alTop
             Shape = bsSpacer
@@ -181,9 +180,9 @@ object FormMain: TFormMain
             ExplicitWidth = 287
           end
           object Bevel3: TBevel
-            Left = 100
+            Left = 135
             Top = 81
-            Width = 294
+            Width = 259
             Height = 18
             Align = alTop
             Shape = bsSpacer
@@ -192,9 +191,9 @@ object FormMain: TFormMain
             ExplicitWidth = 287
           end
           object Bevel5: TBevel
-            Left = 100
+            Left = 135
             Top = 122
-            Width = 294
+            Width = 259
             Height = 18
             Align = alTop
             Shape = bsSpacer
@@ -203,9 +202,9 @@ object FormMain: TFormMain
             ExplicitWidth = 287
           end
           object LabelMapLink: TLabel
-            Left = 100
+            Left = 135
             Top = 23
-            Width = 294
+            Width = 259
             Height = 15
             Cursor = crHandPoint
             Align = alTop
@@ -213,12 +212,23 @@ object FormMain: TFormMain
             OnClick = LabelMapLinkClick
             OnMouseEnter = LabelMapLinkMouseEnter
             OnMouseLeave = LabelMapLinkMouseLeave
+            ExplicitLeft = 100
             ExplicitWidth = 99
           end
+          object Bevel6: TBevel
+            Left = 135
+            Top = 163
+            Width = 259
+            Height = 18
+            Align = alTop
+            Shape = bsSpacer
+            ExplicitLeft = 92
+            ExplicitWidth = 294
+          end
           object DBLabeledEditCity: TDBLabeledEdit
-            Left = 100
+            Left = 135
             Top = 0
-            Width = 294
+            Width = 259
             Height = 23
             Align = alTop
             BevelOuter = bvNone
@@ -241,11 +251,13 @@ object FormMain: TFormMain
             EditLabel.Caption = #1043#1086#1088#1086#1076
             LabelPosition = lpLeft
             LabelSpacing = 20
+            ExplicitLeft = 100
+            ExplicitWidth = 294
           end
           object DBLabeledEditGrade: TDBLabeledEdit
-            Left = 100
+            Left = 135
             Top = 99
-            Width = 294
+            Width = 259
             Height = 23
             Align = alTop
             BorderStyle = bsNone
@@ -265,11 +277,13 @@ object FormMain: TFormMain
             EditLabel.Caption = #1043#1088#1077#1081#1076
             LabelPosition = lpLeft
             LabelSpacing = 20
+            ExplicitLeft = 100
+            ExplicitWidth = 294
           end
           object DBLabeledEditPost: TDBLabeledEdit
-            Left = 100
+            Left = 135
             Top = 56
-            Width = 294
+            Width = 259
             Height = 25
             Align = alTop
             BorderStyle = bsNone
@@ -289,6 +303,8 @@ object FormMain: TFormMain
             EditLabel.Caption = #1044#1086#1083#1078#1085#1086#1089#1090#1100
             LabelPosition = lpLeft
             LabelSpacing = 20
+            ExplicitLeft = 100
+            ExplicitWidth = 294
           end
           object DBEditEmployeeID: TDBEdit
             Left = 8
@@ -302,13 +318,16 @@ object FormMain: TFormMain
             OnChange = DBEditEmployeeIDChange
           end
           object PanelSections: TPanel
-            Left = 100
-            Top = 140
-            Width = 294
+            Left = 135
+            Top = 181
+            Width = 259
             Height = 198
             Align = alTop
             BevelOuter = bvNone
             TabOrder = 4
+            ExplicitLeft = 100
+            ExplicitTop = 140
+            ExplicitWidth = 294
             object DBGridSections: TDBGrid
               Left = 0
               Top = 0
@@ -325,6 +344,33 @@ object FormMain: TFormMain
               TitleFont.Name = 'Segoe UI'
               TitleFont.Style = []
             end
+          end
+          object DBLabeledEditEmploymentDate: TDBLabeledEdit
+            Left = 135
+            Top = 140
+            Width = 259
+            Height = 23
+            Align = alTop
+            BorderStyle = bsNone
+            Color = 5064246
+            DataSource = DataModule1.DataSourceEmployeeSQL
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWhite
+            Font.Height = -13
+            Font.Name = 'Segoe UI'
+            Font.Style = []
+            ParentFont = False
+            ReadOnly = True
+            TabOrder = 5
+            StyleName = 'Windows'
+            EditLabel.Width = 111
+            EditLabel.Height = 23
+            EditLabel.Caption = #1044#1072#1090#1072' '#1085#1072#1095#1072#1083#1072' '#1088#1072#1073#1086#1090#1099
+            LabelPosition = lpLeft
+            LabelSpacing = 20
+            ExplicitLeft = 84
+            ExplicitTop = 128
+            ExplicitWidth = 294
           end
         end
         object DBLabeledEditName: TDBLabeledEdit

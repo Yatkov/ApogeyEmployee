@@ -46,6 +46,8 @@ type
     ShapeCity: TShape;
     ShapePost: TShape;
     ShapeGrade: TShape;
+    DBLabeledEditEmploymentDate: TDBLabeledEdit;
+    Bevel6: TBevel;
     procedure FormCreate(Sender: TObject);
     procedure DBLookupComboBoxPostCloseUp(Sender: TObject);
     procedure BitBtnSaveClick(Sender: TObject);
@@ -65,6 +67,8 @@ type
     procedure checkedCount();
     procedure checkDublicateSection(sectionNameId: String);
     procedure clearSections();
+    function FindNodeBySectionID(SectionID: Integer): TTreeNode;
+    function FindNodeByExactSectionID(ParentNode: TTreeNode; ExactSectionID: Integer): TTreeNode;
   public
     { Public declarations }
     isEdit: boolean;
@@ -114,6 +118,7 @@ begin
   DBLabeledEditFirstName.DataField := 'firstName';
   DBLabeledEditLastName.DataField := 'lastName';
   DBLabeledEditContact.DataField := 'tgContact';
+  DBLabeledEditEmploymentDate.DataField := 'employmentDate';
 
   DBLookupComboBoxCity.DataField := 'city';
   DBLookupComboBoxCity.KeyField := 'cityID';
@@ -176,12 +181,57 @@ begin
 end;
 
 procedure TFormAddEmployee.selectSections;
-var Node: TTreeNode;
+var SectionNode, SubsectionNode: TTreeNode;
+    SectionID, ExactSectionID: Integer;
 begin
+  DataModule1.FDQuerySectionName.SQL.Text := 'SELECT SectionNameID, SectionID'
+                                           + ' FROM EmployeeSections'
+                                           + ' WHERE EmployeeID = ' + DBEditEmpID.Text;
+  try
+    DataModule1.FDQuerySectionName.Open;
+    while not DataModule1.FDQuerySectionName.Eof do begin
+      SectionID := DataModule1.FDQuerySectionName.FieldByName('SectionNameID').AsInteger;
+      ExactSectionID := DataModule1.FDQuerySectionName.FieldByName('SectionID').AsInteger;
+      SectionNode := FindNodeBySectionID(SectionID);
+      if Assigned(SectionNode) then SectionNode.Checked := True;
+      if ExactSectionID <> 0 then begin
+        SubsectionNode := FindNodeByExactSectionID(SectionNode, ExactSectionID);
+        if Assigned(SubsectionNode) then SubsectionNode.Checked := True;
+      end;
+      DataModule1.FDQuerySectionName.Next;
+    end;
+  finally
+    DataModule1.FDQuerySectionName.Close;
+  end;
+end;
+
+function TFormAddEmployee.FindNodeBySectionID(SectionID: Integer): TTreeNode;
+var
+  Node: TTreeNode;
+begin
+  Result := nil;
   Node := TreeViewSections.Items.GetFirstNode;
-  while Assigned(Node) do begin
-    //showMessage(IntToStr(Integer(Node.data)));
-    Node := Node.getNext;
+  while Assigned(Node) do
+  begin
+    if Node.Data <> nil then
+      if Integer(Node.Data) = SectionID then
+        Exit(Node);
+    Node := Node.GetNext;
+  end;
+end;
+
+function TFormAddEmployee.FindNodeByExactSectionID(ParentNode: TTreeNode; ExactSectionID: Integer): TTreeNode;
+var
+  SubNode: TTreeNode;
+begin
+  Result := nil;
+  SubNode := ParentNode.getFirstChild;
+  while Assigned(SubNode) do
+  begin
+    if SubNode.Data <> nil then
+      if Integer(SubNode.Data) = ExactSectionID then
+        Exit(SubNode);
+    SubNode := SubNode.getNextSibling;
   end;
 end;
 
