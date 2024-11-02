@@ -89,4 +89,14 @@ object DataModule1: TDataModule1
     Left = 440
     Top = 184
   end
+  object FDTableDirector: TFDTable
+    Connection = FDConEmployee
+    Left = 304
+    Top = 280
+  end
+  object DataSourceDirector: TDataSource
+    DataSet = FDTableDirector
+    Left = 440
+    Top = 280
+  end
 end

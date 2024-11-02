@@ -3,7 +3,7 @@ object FormAddEmployee: TFormAddEmployee
   Top = 0
   BorderStyle = bsToolWindow
   Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1089#1086#1090#1088#1091#1076#1085#1080#1082#1072
-  ClientHeight = 339
+  ClientHeight = 403
   ClientWidth = 752
   Color = clBtnFace
   DefaultMonitor = dmMainForm
@@ -21,18 +21,17 @@ object FormAddEmployee: TFormAddEmployee
     Left = 0
     Top = 0
     Width = 411
-    Height = 298
+    Height = 362
     Align = alClient
     Padding.Left = 130
     Padding.Top = 10
     Padding.Right = 15
     Padding.Bottom = 10
     TabOrder = 0
-    ExplicitWidth = 333
-    ExplicitHeight = 268
+    ExplicitHeight = 298
     DesignSize = (
       411
-      298)
+      362)
     object LabelGrade: TLabel
       Left = 88
       Top = 223
@@ -54,7 +53,7 @@ object FormAddEmployee: TFormAddEmployee
     object LabelPost: TLabel
       Left = 57
       Top = 188
-      Width = 62
+      Width = 64
       Height = 15
       Caption = #1044#1086#1083#1078#1085#1086#1089#1090#1100
       FocusControl = DBLookupComboBoxPost
@@ -202,6 +201,26 @@ object FormAddEmployee: TFormAddEmployee
       ExplicitTop = 252
       ExplicitWidth = 236
     end
+    object Bevel8: TBevel
+      Left = 131
+      Top = 279
+      Width = 264
+      Height = 12
+      Align = alTop
+      Shape = bsSpacer
+      ExplicitLeft = 141
+      ExplicitTop = 308
+    end
+    object Bevel9: TBevel
+      Left = 131
+      Top = 308
+      Width = 264
+      Height = 12
+      Align = alTop
+      Shape = bsSpacer
+      ExplicitLeft = 142
+      ExplicitTop = 349
+    end
     object DBLookupComboBoxGrade: TDBLookupComboBox
       Left = 131
       Top = 221
@@ -213,8 +232,6 @@ object FormAddEmployee: TFormAddEmployee
       Enabled = False
       ListSource = DataModule1.DataSourceGrade
       TabOrder = 0
-      ExplicitLeft = 81
-      ExplicitWidth = 236
     end
     object DBLookupComboBoxPost: TDBLookupComboBox
       Left = 131
@@ -227,8 +244,6 @@ object FormAddEmployee: TFormAddEmployee
       ListSource = DataModule1.DataSourcePost
       TabOrder = 1
       OnCloseUp = DBLookupComboBoxPostCloseUp
-      ExplicitLeft = 81
-      ExplicitWidth = 236
     end
     object DBLookupComboBoxCity: TDBLookupComboBox
       Left = 131
@@ -240,8 +255,6 @@ object FormAddEmployee: TFormAddEmployee
       DropDownRows = 9
       ListSource = DataModule1.DataSourceCity
       TabOrder = 2
-      ExplicitLeft = 81
-      ExplicitWidth = 236
     end
     object DBLabeledEditMiddleName: TDBLabeledEdit
       Left = 131
@@ -256,8 +269,6 @@ object FormAddEmployee: TFormAddEmployee
       EditLabel.Caption = #1060#1072#1084#1080#1083#1080#1103
       LabelPosition = lpLeft
       LabelSpacing = 10
-      ExplicitLeft = 81
-      ExplicitWidth = 236
     end
     object DBLabeledEditFirstName: TDBLabeledEdit
       Left = 131
@@ -272,8 +283,6 @@ object FormAddEmployee: TFormAddEmployee
       EditLabel.Caption = #1048#1084#1103
       LabelPosition = lpLeft
       LabelSpacing = 10
-      ExplicitLeft = 81
-      ExplicitWidth = 236
     end
     object DBLabeledEditLastName: TDBLabeledEdit
       Left = 131
@@ -283,13 +292,11 @@ object FormAddEmployee: TFormAddEmployee
       Align = alTop
       DataSource = DataModule1.DataSourceEmployee
       TabOrder = 5
-      EditLabel.Width = 51
+      EditLabel.Width = 52
       EditLabel.Height = 23
       EditLabel.Caption = #1054#1090#1095#1077#1089#1090#1074#1086
       LabelPosition = lpLeft
       LabelSpacing = 10
-      ExplicitLeft = 81
-      ExplicitWidth = 236
     end
     object DBLabeledEditContact: TDBLabeledEdit
       Left = 131
@@ -302,13 +309,11 @@ object FormAddEmployee: TFormAddEmployee
       ParentShowHint = False
       ShowHint = True
       TabOrder = 6
-      EditLabel.Width = 57
+      EditLabel.Width = 58
       EditLabel.Height = 23
       EditLabel.Caption = #1058#1043' '#1082#1086#1085#1090#1072#1082#1090
       LabelPosition = lpLeft
       LabelSpacing = 10
-      ExplicitLeft = 81
-      ExplicitWidth = 236
     end
     object DBEditEmpID: TDBEdit
       Left = 8
@@ -331,19 +336,40 @@ object FormAddEmployee: TFormAddEmployee
       ParentShowHint = False
       ShowHint = True
       TabOrder = 8
-      EditLabel.Width = 111
+      EditLabel.Width = 112
       EditLabel.Height = 23
       EditLabel.Caption = #1044#1072#1090#1072' '#1085#1072#1095#1072#1083#1072' '#1088#1072#1073#1086#1090#1099
       LabelPosition = lpLeft
       LabelSpacing = 10
-      ExplicitLeft = 81
-      ExplicitTop = 308
-      ExplicitWidth = 236
+    end
+    object DBLookupComboBoxDirector: TDBLookupComboBox
+      Left = 131
+      Top = 320
+      Width = 264
+      Height = 23
+      Align = alTop
+      DataSource = DataModule1.DataSourceEmployee
+      DropDownRows = 9
+      ListSource = DataModule1.DataSourceDirector
+      TabOrder = 9
+      ExplicitLeft = 115
+      ExplicitTop = 349
+    end
+    object DBCheckBoxIsDirector: TDBCheckBox
+      Left = 131
+      Top = 291
+      Width = 264
+      Height = 17
+      Align = alTop
+      Caption = #1056#1091#1082#1086#1074#1086#1076#1080#1090#1077#1083#1100
+      DataSource = DataModule1.DataSourceEmployee
+      TabOrder = 10
+      ExplicitTop = 285
     end
   end
   object PanelConrol: TPanel
     Left = 0
-    Top = 298
+    Top = 362
     Width = 752
     Height = 41
     Align = alBottom
@@ -352,8 +378,7 @@ object FormAddEmployee: TFormAddEmployee
     Padding.Right = 10
     Padding.Bottom = 5
     TabOrder = 1
-    ExplicitTop = 268
-    ExplicitWidth = 674
+    ExplicitTop = 298
     object Bevel10: TBevel
       Left = 608
       Top = 6
@@ -394,7 +419,6 @@ object FormAddEmployee: TFormAddEmployee
       Images = ImageList1
       TabOrder = 0
       OnClick = BitBtnSaveClick
-      ExplicitLeft = 400
     end
     object ButtonCancel: TButton
       Left = 618
@@ -405,23 +429,21 @@ object FormAddEmployee: TFormAddEmployee
       Caption = #1054#1090#1084#1077#1085#1072
       TabOrder = 1
       OnClick = ButtonCancelClick
-      ExplicitLeft = 540
     end
   end
   object PanelAddSections: TPanel
     Left = 411
     Top = 0
     Width = 341
-    Height = 298
+    Height = 362
     Align = alRight
     TabOrder = 2
-    ExplicitLeft = 333
-    ExplicitHeight = 268
+    ExplicitHeight = 298
     object TreeViewSections: TTreeView
       Left = 1
       Top = 1
       Width = 339
-      Height = 278
+      Height = 342
       Align = alClient
       CheckBoxes = True
       CheckStyles = [csPartial]
@@ -430,18 +452,18 @@ object FormAddEmployee: TFormAddEmployee
       ShowLines = False
       TabOrder = 0
       OnCheckStateChanging = TreeViewSectionsCheckStateChanging
-      ExplicitHeight = 248
+      ExplicitHeight = 278
     end
     object StatusBarSectionCounter: TStatusBar
       Left = 1
-      Top = 279
+      Top = 343
       Width = 339
       Height = 18
       Panels = <
         item
           Width = 50
         end>
-      ExplicitTop = 249
+      ExplicitTop = 279
     end
   end
   object ImageList1: TImageList

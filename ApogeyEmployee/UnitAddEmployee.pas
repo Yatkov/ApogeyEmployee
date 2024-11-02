@@ -48,6 +48,10 @@ type
     ShapeGrade: TShape;
     DBLabeledEditEmploymentDate: TDBLabeledEdit;
     Bevel6: TBevel;
+    Bevel8: TBevel;
+    Bevel9: TBevel;
+    DBLookupComboBoxDirector: TDBLookupComboBox;
+    DBCheckBoxIsDirector: TDBCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure DBLookupComboBoxPostCloseUp(Sender: TObject);
     procedure BitBtnSaveClick(Sender: TObject);
@@ -119,6 +123,7 @@ begin
   DBLabeledEditLastName.DataField := 'lastName';
   DBLabeledEditContact.DataField := 'tgContact';
   DBLabeledEditEmploymentDate.DataField := 'employmentDate';
+  DBCheckBoxIsDirector.DataField := 'isDirector';
 
   DBLookupComboBoxCity.DataField := 'city';
   DBLookupComboBoxCity.KeyField := 'cityID';
@@ -131,6 +136,8 @@ begin
   DBLookupComboBoxGrade.DataField := 'Grade';
   DBLookupComboBoxGrade.KeyField := 'GradeID';
   DBLookupComboBoxGrade.ListField := 'GradeName';
+
+  DBLookupComboBoxDirector.DataField := ''
 
   isSave := false;
 end;

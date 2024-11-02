@@ -30,6 +30,8 @@ type
     FDQueryEmployeeFind: TFDQuery;
     DataSourceSectionFind: TDataSource;
     FDQuerySectionFind: TFDQuery;
+    FDTableDirector: TFDTable;
+    DataSourceDirector: TDataSource;
     procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }
@@ -82,6 +84,9 @@ begin
 
     FDQueryEmployeeFind.ConnectionName := FDConEmployee.ConnectionName;
     FDQueryEmployeeFind.Connection := FDConEmployee;
+
+    FDTableDirector.ConnectionName := FDConEmployee.ConnectionName;
+    FDTableDirector.Connection := FDConEmployee;
   finally
 
   end;
